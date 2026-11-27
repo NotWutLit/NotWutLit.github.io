@@ -90,6 +90,40 @@ if (typed && !seen && !reduce) {
   [...text].forEach((ch, i) => setTimeout(() => { out.textContent += ch; }, start + i * per));
 }
 
+/* ---------- 3D titles ---------- */
+if (finePointer && !reduce) (() => {
+  const titles = $$(".title-3d"), visible = new Set();
+  let raf = 0, mx = 0, my = 0;
+  const clamp = n => Math.max(-1, Math.min(1, n));
+  const reset = el => ["--rx", "--ry", "--dx", "--dy"].forEach(p => el.style.removeProperty(p));
+  const observer = new IntersectionObserver(entries => entries.forEach(({ target, isIntersecting }) => {
+    if (isIntersecting) visible.add(target);
+    else { visible.delete(target); reset(target); }
+  }));
+  titles.forEach(el => observer.observe(el));
+  addEventListener("pointermove", e => {
+    mx = e.clientX; my = e.clientY;
+    if (raf || !visible.size) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      visible.forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        const px = clamp((mx - r.left - r.width / 2) / (r.width / 2));
+        const py = clamp((my - r.top - r.height / 2) / (r.height / 2));
+        el.style.setProperty("--rx", (-py * 8).toFixed(2) + "deg");
+        el.style.setProperty("--ry", (px * 8).toFixed(2) + "deg");
+        el.style.setProperty("--dx", clamp(.7 - px * 1.7).toFixed(2));
+        el.style.setProperty("--dy", clamp(1 - py * 2).toFixed(2));
+      });
+    });
+  }, { passive: true });
+  const resetAll = () => { cancelAnimationFrame(raf); raf = 0; titles.forEach(reset); };
+  // The document root receives pointerleave when the pointer exits the window.
+  document.documentElement.addEventListener("pointerleave", resetAll, { passive: true });
+  addEventListener("blur", resetAll);
+})();
+
 /* ---------- Cursor spotlight + scroll progress ---------- */
 const root = document.documentElement;
 if (finePointer && !reduce) {
