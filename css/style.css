@@ -681,10 +681,10 @@ section::after { content: ""; display: table; clear: both; }
 .letter textarea { display: block; width: 100%; resize: vertical; min-height: 10.5rem; border: 0; outline: 0; background: transparent; color: #2B2B2B;
   font: italic 1.35rem/2.1rem var(--serif); padding: 0 .1rem;
   background-image: repeating-linear-gradient(transparent 0 2.03rem, #E2D6BC 2.03rem 2.1rem); background-attachment: local; }
-.letter textarea::placeholder { color: #8F887A; }
+.letter textarea::placeholder { color: #6F685B; } /* 5.0:1 on the paper */
 .letter textarea:focus-visible { box-shadow: 0 0 0 2px rgba(138,109,43,.45); border-radius: 4px; }
 .letter-foot { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin: .75rem 0 1rem; }
-.letter .sign { font: italic 1.4rem var(--serif); color: #8A6D2B; }
+.letter .sign { font: italic 1.4rem var(--serif); color: #74591F; } /* 5.9:1 on the paper */
 .letter .count { font: 12px var(--mono); color: #6B6558; }
 .letter .count.ok { color: #3E7A4E; }
 .letter .btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
