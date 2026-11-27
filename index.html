@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Thong Thai · CS Student at UGA</title>
-  <meta name="description" content="Personal website of Thong Thai, computer science student at the University of Georgia.">
+  <meta name="description" content="Personal website of Thong Thai, computer science student at the University of Georgia, from Đà Nẵng, Vietnam.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/site.js" defer></script>
 </head>
-<body>
+<body data-page="home">
   <a class="skip-link" href="#main-content">Skip to content</a>
   <header>
     <div class="wide">
@@ -29,22 +29,109 @@
   </header>
 
   <main id="main-content" tabindex="-1">
-    <div class="wide">
-      <h1 data-type>Thong Thai</h1>
-      <p class="tagline">CS student at UGA building apps for the people around me.</p>
-      <p class="lead">I grew up in Đà Nẵng, Vietnam, and I study computer science at the University of Georgia. I build apps that make everyday care a little easier, from helping older adults keep healthy routines to giving people a place to revisit memories of those they love.</p>
-      <p><a href="about.html">About me</a> · <a href="projects.html">See all projects</a> · <a href="resume.html">Read my résumé</a></p>
-
-      <section class="feature" aria-labelledby="featured">
-        <img class="vt-gp" src="assets/img/gp-home.png" width="400" height="867"
-             alt="Golden Peace home screen: a large 'Xin chào!' greeting, a daily encouraging message, and a card for the emotion journal over a photo of a smiling older woman.">
+    <!-- Hero: 3D city of lights built from Thong's own Đà Nẵng photo (js/hero3d.js). The photo is the fallback. -->
+    <section class="hero" aria-labelledby="name">
+      <div class="hero-bg">
+        <img src="assets/img/life/danang-skyline.jpg" width="1920" height="823" alt="" fetchpriority="high">
+        <canvas id="city" data-src="assets/img/life/danang-skyline.jpg" aria-hidden="true"></canvas>
+      </div>
+      <div class="wide hero-inner">
         <div>
-          <h2 id="featured">Golden Peace</h2>
-          <p>A mobile app that helps older adults in Vietnam track their emotions, relax with music and meditation, and keep healthy daily habits, all in one calm, easy-to-read place.</p>
-          <a class="btn" href="golden-peace.html">Read the story</a>
+          <h1 class="display" id="name" data-type>Thong Thai</h1>
+          <p class="rotator">I build apps for <span class="scramble" aria-hidden="true"
+             data-phrases='["the people around me","older adults in Vietnam","people living with Alzheimer’s","anyone who wants to remember"]'>the people around me</span><span class="sr-only">the people around me, from older adults in Vietnam to people living with Alzheimer’s.</span></p>
+          <p class="lead">I grew up in Đà Nẵng, Vietnam, and I study computer science at the University of Georgia. I build apps that make everyday care a little easier, from helping older adults keep healthy routines to giving people a place to revisit memories of those they love.</p>
+          <div class="actions">
+            <a class="btn" href="#work">See my work <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="btn ghost" href="golden-peace.html">Read the Golden Peace story</a>
+            <button class="or-press" type="button" data-open="palette">or press <kbd>Ctrl</kbd> <kbd>K</kbd></button>
+          </div>
+          <p data-clocks></p>
         </div>
-      </section>
+        <figure class="hero-photo">
+          <div class="polaroid">
+            <img src="assets/img/life/me-now.jpg" width="800" height="1000" alt="Thong standing between giant red Coca-Cola bottles and holiday trees.">
+            <figcaption>me, recently</figcaption>
+          </div>
+        </figure>
+      </div>
+      <div class="scroll-cue" aria-hidden="true"></div>
+    </section>
+
+    <div class="ticker">
+      <p class="sr-only">Tools I use: Python, C++, TypeScript, React Native, Expo, Flutter, Supabase, Firebase, MySQL, Figma, YOLOv5.</p>
+      <div class="ticker-track" aria-hidden="true">
+        <span>Python</span><span>C++</span><span>TypeScript</span><span>React Native</span><span>Expo</span><span>Flutter</span><span>Supabase</span><span>Firebase</span><span>MySQL</span><span>Figma</span><span>YOLOv5</span><span>120+ user interviews</span>
+        <span>Python</span><span>C++</span><span>TypeScript</span><span>React Native</span><span>Expo</span><span>Flutter</span><span>Supabase</span><span>Firebase</span><span>MySQL</span><span>Figma</span><span>YOLOv5</span><span>120+ user interviews</span>
+      </div>
     </div>
+
+    <section class="section wide" id="work" aria-labelledby="work-title">
+      <div class="sec-head">
+        <h2 id="work-title">Selected <em>work</em></h2>
+        <p>Two apps, both shaped by listening to the people who use them.</p>
+      </div>
+      <div class="bento">
+        <article class="tile card spot b-gp" data-tilt="4">
+          <div class="thumb"><img src="assets/img/gp-cover.jpg" width="1000" height="625" alt="Three Golden Peace screens: the Relax tab, the home screen with a big ‘Xin chào!’ greeting, and the daily health checklist."></div>
+          <div class="body">
+            <h3>Golden Peace</h3>
+            <p>A calm, easy-to-read wellness app for older adults in Vietnam. I founded the team and ran research with 120+ older adults and care staff.</p>
+            <ul class="tags" aria-label="Technologies"><li>React Native</li><li>Expo</li><li>TypeScript</li><li>Supabase</li><li>Figma</li></ul>
+            <div class="links"><a class="stretch" href="golden-peace.html">Read the case study</a></div>
+          </div>
+        </article>
+        <article class="tile card spot b-rm" data-tilt="4">
+          <div class="thumb"><img src="assets/img/rm-cover.png" width="1000" height="625" alt="Illustration of a Remember Me entry: a letter that begins ‘Dear Grandma,’ with a photo and a song attached."></div>
+          <div class="body">
+            <h3>Remember Me</h3>
+            <p>A diary app for people living with Alzheimer’s: letters with a photo and a song attached.</p>
+            <ul class="tags" aria-label="Technologies"><li>Flutter</li><li>Firebase</li><li>Figma</li></ul>
+            <div class="links"><a class="stretch" href="https://github.com/NotWutLit/remember-me-app">Code on GitHub</a></div>
+          </div>
+        </article>
+        <article class="tile spot b-home">
+          <img src="assets/img/life/danang-sunset.jpg" width="1200" height="900" alt="" loading="lazy">
+          <h3>Đà Nẵng, Vietnam</h3>
+          <p>Where I grew up, in a home shared by three generations. Photo by me.</p>
+          <p data-clocks></p>
+        </article>
+        <article class="tile spot b-now">
+          <h3>Now</h3>
+          <ul class="now-list">
+            <li><span>Studying</span>Computer Science, University of Georgia</li>
+            <li><span>Leading</span>Vice President, AgeWell Tech Solutions Club</li>
+            <li><span>Building</span>EmoTech, a digital wellness initiative I co-founded</li>
+          </ul>
+          <a href="resume.html">Read my résumé →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wide" id="life" aria-labelledby="life-title">
+      <div class="sec-head">
+        <h2 id="life-title">Off the <em>screen</em></h2>
+        <p>Drag the photos around. Something might be hiding underneath.</p>
+      </div>
+      <div class="board">
+        <button class="key" type="button" data-key="home" style="left:63%;top:52%"></button>
+        <figure class="polaroid" style="left:2%;top:7%;--r:-6deg;width:280px"><img src="assets/img/life/badminton.jpg" width="1000" height="750" alt="Thong mid-swing on an indoor badminton court; other people’s faces are blurred." loading="lazy"><figcaption>badminton (I’m in the middle)</figcaption></figure>
+        <figure class="polaroid" style="left:24%;top:33%;--r:4deg"><img src="assets/img/life/ski.jpg" width="800" height="1000" alt="Thong in a bright red ski suit, taking a selfie from above." loading="lazy"><figcaption>dressed for the slopes</figcaption></figure>
+        <figure class="polaroid" style="left:42%;top:4%;--r:-3deg"><img src="assets/img/life/tote-bag.jpg" width="800" height="1000" alt="A canvas tote bag with a penguin in a red hoodie painted on it." loading="lazy"><figcaption>a penguin I painted</figcaption></figure>
+        <figure class="polaroid" style="left:58%;top:36%;--r:5deg"><img src="assets/img/life/child-me.jpg" width="800" height="1000" alt="Young Thong in a cap, hand on chin, posing under palm trees." loading="lazy"><figcaption>young me, already posing</figcaption></figure>
+        <figure class="polaroid" style="left:77%;top:6%;--r:-4deg"><img src="assets/img/life/danang-clouds.jpg" width="1200" height="900" alt="Đà Nẵng’s skyline under heavy clouds at dusk." loading="lazy"><figcaption>home at dusk, shot by me</figcaption></figure>
+      </div>
+      <p class="board-note">Drag to rearrange. Double-click a photo to send it back.</p>
+    </section>
+
+    <section class="outro wide" aria-labelledby="outro-title">
+      <h2 id="outro-title">Do the work so I can be there for <em>others</em>.</h2>
+      <p class="tagline" style="margin-inline:auto">Want to build something together?</p>
+      <div class="actions">
+        <a class="btn" href="mailto:thong11042008@gmail.com">Email me <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn ghost" href="https://github.com/NotWutLit">GitHub</a>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -53,7 +140,7 @@
         <li><a href="mailto:thong11042008@gmail.com">Email</a></li>
         <li><a href="https://github.com/NotWutLit">GitHub</a></li>
       </ul>
-      <p>Last updated November 2026</p>
+      <p>Built by hand. No frameworks.</p>
     </div>
   </footer>
 </body>
