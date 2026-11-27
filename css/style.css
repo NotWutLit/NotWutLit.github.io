@@ -970,3 +970,113 @@ section:has(.illo-side)::after { content: ""; display: table; clear: both; }
 @keyframes key-launch-fade { to { opacity: 0; transform: scale(.75); } }
 @media (prefers-reduced-motion: reduce) { .key.key.found { animation: none; opacity: 0; } }
 @media print { .chibi-entrance, .key-fx { display: none !important; } }
+
+/* ---------- Motion: controls ---------- */
+.motion-toggle { white-space: nowrap; }
+.motion-toggle[aria-pressed="true"] { color: var(--gold); }
+@media (max-width: 1100px) { .motion-toggle span { display: none; } .motion-toggle { width: 44px; padding: 0; justify-content: center; } }
+@media (max-width: 640px) { header .wide { column-gap: .35rem; } .tools { gap: .3rem; } .keyring { padding-inline: .55rem; } }
+@media (max-width: 360px) { .logo { font-size: 1.15rem; gap: .35rem; } .tools { padding-right: 42px; } header .wide { column-gap: .2rem; } .keyring { padding-inline: .4rem; } .keyring .slots { gap: 2px; } .keyring .slots i { width: 6px; } }
+/* Disabled motion shows finished states rather than freezing a half-hidden reveal. */
+html.motion-paused { scroll-behavior: auto; }
+html.motion-paused *, html.motion-paused *::before, html.motion-paused *::after { animation: none !important; transition: none !important; }
+html.motion-hidden *, html.motion-hidden *::before, html.motion-hidden *::after,
+.motion-offscreen, .motion-offscreen *, .motion-offscreen::before, .motion-offscreen::after, .motion-offscreen *::before, .motion-offscreen *::after { animation-play-state: paused !important; }
+html.motion-paused .ticker-track { flex-wrap: wrap; width: auto; justify-content: center; }
+html.motion-paused .s-photo .print, html.motion-paused .s-gaming .crack, html.motion-paused .env .seal { opacity: 1; }
+html.motion-paused .env .flap { transform: none; }
+html.motion-paused .phone3d img, html.motion-paused .hero-photo .polaroid { transform: rotate(var(--r, 0deg)); }
+html.motion-paused::view-transition-group(*), html.motion-paused::view-transition-old(*), html.motion-paused::view-transition-new(*) { animation: none !important; }
+
+/* ---------- Motion: starfield ---------- */
+body > .starfield { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+/* ---------- Motion: reveals ---------- */
+.js [data-reveal="up"] { --reveal-start: translateY(28px); }
+.js [data-reveal="blur"] { --reveal-start: translateY(12px); filter: blur(3px); }
+.js [data-reveal="wipe"] { --reveal-start: translateX(-22px) scaleX(.97); transform-origin: left; }
+.js [data-reveal="scale"] { --reveal-start: scale(.94); }
+.js [data-reveal] { transform: var(--reveal-start, translateY(28px)); transition-property: opacity, transform, filter; }
+.js [data-reveal].in { transform: none; filter: none; }
+@supports (animation-timeline: view()) {
+  html.js:not(.motion-paused) [data-reveal]:not(.in) { animation: motion-reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 20%; }
+}
+@keyframes motion-reveal { from { opacity: 0; transform: var(--reveal-start, translateY(28px)); } to { opacity: 1; transform: none; filter: none; } }
+h2 em { position: relative; display: inline-block; }
+h2 em::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.16em; height: .12em; border-bottom: 2px solid var(--gold); border-radius: 50%; transform: scaleX(0) rotate(-2deg); transform-origin: left; transition: transform .8s var(--ease-out) .15s; opacity: .75; }
+h2.in em::after { transform: scaleX(1) rotate(-2deg); }
+@media (max-width: 599px), (pointer: coarse) { .js [data-reveal] { --reveal-start: translateY(10px); transition-duration: .45s; filter: none; } }
+
+/* ---------- Motion: count-ups ---------- */
+[data-count] { font-variant-numeric: tabular-nums; }
+
+/* ---------- Motion: résumé progress ---------- */
+.resume-main { min-width: 0; }
+.resume-stats { list-style: none; padding: 0 0 .6rem; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+.resume-stats li { min-width: 0; padding: 1rem .8rem; border: 1px solid var(--border); border-radius: 14px; background: linear-gradient(135deg, rgba(232,182,81,.08), var(--surface)); }
+.resume-stats strong { display: block; color: var(--gold-soft); font: 2rem/1.1 var(--serif); margin-bottom: .5rem; white-space: nowrap; }
+.resume-stats span:not(.sr-only) { font: 11px/1.5 var(--mono); color: var(--muted); display: block; }
+.resume-stats strong span:not(.sr-only) { font: inherit; color: inherit; }
+.resume-stats li:last-child { grid-column: span 2; }
+.resume-item::before { background: var(--gold); opacity: .65; transition: none; }
+.resume-item::after { opacity: .4; box-shadow: none; }
+.resume-item.timeline-current::after { opacity: 1; box-shadow: 0 0 12px var(--gold); }
+.resume-nav a::after { content: ""; position: absolute; left: 1.35rem; right: .5rem; bottom: 4px; height: 2px; background: var(--gold); transform-origin: left; transform: scaleX(var(--section-progress, 0)); opacity: 0; }
+.resume-nav a[aria-current]::after { opacity: .75; }
+.skill-groups .tags li { transition: opacity .45s var(--ease-out) var(--chip-delay), transform .45s var(--ease-out) var(--chip-delay); position: relative; }
+.skill-groups .tags li::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; box-shadow: 0 0 15px rgba(232,182,81,.3); opacity: 0; transition: opacity .25s; pointer-events: none; }
+.js .skill-groups > :not(.in) .tags li { opacity: 0; transform: translateY(9px); }
+@media (hover: hover) and (pointer: fine) {
+  html:not(.motion-paused) .skill-groups .tags li:hover { transform: translateY(-3px); transition-delay: 0s; }
+  .skill-groups .tags li:hover::after { opacity: 1; }
+}
+@media (max-width: 599px) {
+  .resume-stats { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: .75rem; }
+  .resume-stats li { flex: 0 0 155px; scroll-snap-align: start; }
+}
+
+/* ---------- Motion: desk ---------- */
+.desk-scene { animation: none; }
+.desk-light { transform-box: fill-box; transform-origin: top; }
+.desk-scene.in .desk-light { animation: lamp-on 1s ease-out both; }
+.desk-scene.in .desk-steam { animation: desk-steam 3.5s ease-in-out infinite; }
+@keyframes lamp-on { 0%, 18%, 36% { opacity: 0; } 10%, 28% { opacity: .06; } 55%, 100% { opacity: .2; } }
+@keyframes desk-steam { 0%, 100% { transform: translateY(0); opacity: .45; } 50% { transform: translate(2px, -5px); opacity: .9; } }
+
+/* ---------- Motion: reward ---------- */
+.confetti { overflow: hidden; }
+.confetti i { position: absolute; left: 50%; top: 50%; width: 7px; height: 4px; animation: reward-spark 1.8s var(--ease-out) both; }
+@keyframes reward-spark { 0% { transform: translate(0, 0); opacity: 1; } 35% { transform: translate(calc(var(--dx) * .7), -100px) rotate(120deg); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(300deg); opacity: 0; } }
+
+/* ---------- Motion: chibi entrances ---------- */
+.chibi-entrance.entrance-bottom { top: auto; height: 245px; }
+
+/* ---------- Motion: static and print ---------- */
+html.motion-paused [data-reveal] { opacity: 1; transform: none; filter: none; }
+html.motion-paused h2 em::after { transform: scaleX(1) rotate(-2deg); }
+html.motion-paused .resume-item::before { transform: scaleY(1); }
+html.motion-paused .skill-groups .tags li { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  html.js [data-reveal] { opacity: 1; transform: none; filter: none; animation: none !important; }
+  h2 em::after { transform: scaleX(1) rotate(-2deg); }
+  .resume-item::before { transform: scaleY(1); }
+  .desk-scene .desk-light { opacity: .2; }
+  .desk-scene .desk-steam, .skill-groups .tags li { animation: none !important; }
+  html.js .skill-groups .tags li { opacity: 1; transform: none; }
+}
+@media (max-width: 599px), (pointer: coarse) { .desk-scene .desk-steam { animation: none !important; } }
+@media print {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html.js [data-reveal], [data-tilt], .skill-groups .tags li, .title-3d { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .resume-side { position: static !important; break-inside: avoid; margin-bottom: 1.5rem; }
+  .resume-layout, .resume-main { display: block; }
+  .resume-main > section { break-inside: auto; }
+  .resume-item, .awards li { break-inside: avoid; }
+  .starfield, .motion-toggle, .chibi, .chibi-entrance, .illo, .keyring, .resume-stats, .key-fx, .confetti { display: none !important; }
+  .resume-item::before { transform: none !important; background: #777; }
+  .resume-item::after { background: #777; box-shadow: none !important; opacity: 1; }
+  .contact { margin-bottom: 0; }
+  h2 { break-after: avoid; }
+  h2 em::after { display: none; }
+}

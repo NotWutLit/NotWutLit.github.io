@@ -1,7 +1,8 @@
 // Thong Thai: site behaviour. Plain JS, no frameworks.
 // Every feature checks for its element first, so each page only runs what it has.
 document.documentElement.classList.add("js");
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+let reduce = motionPreference.matches;
 const finePointer = matchMedia("(pointer: fine)").matches;
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -15,7 +16,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     try { return orders[new URL(url, location.href).pathname.split("/").pop() || "index.html"]; } catch {}
   };
   const direction = (e, from, to) => {
-    if (!e.viewTransition || motion.matches) return;
+    if (!e.viewTransition || motion.matches || document.documentElement.classList.contains("motion-paused")) return;
     const a = order(from), b = order(to);
     if (typeof a === "number" && typeof b === "number" && a !== b) e.viewTransition?.types?.add(b > a ? "forward" : "back");
   };
@@ -47,7 +48,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     html.classList.add("no-vt");
     let leaving = false, timer;
     document.addEventListener("click", e => {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || motion.matches) return;
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || motion.matches || !motionOK()) return;
       const link = e.target.closest("a[href]");
       if (!link || link.hasAttribute("download") || (link.target && link.target.toLowerCase() !== "_self")) return;
       const url = new URL(link.href), here = new URL(location.href);
@@ -68,6 +69,23 @@ const store = { // localStorage can be blocked; the site still works without it
   get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
 };
+/* ---------- Motion: controls ---------- */
+let motionPaused = store.get("tt-motion", false) === true;
+const hiddenAnimations = new Set();
+function motionOK() { return !reduce && !motionPaused; }
+const motionState = () => {
+  document.documentElement.classList.toggle("motion-paused", motionPaused);
+  document.documentElement.classList.toggle("motion-hidden", document.hidden);
+  document.getAnimations().filter(a => !(a instanceof CSSAnimation) && !(a instanceof CSSTransition)).forEach(a => {
+    if (!motionOK() && Number.isFinite(a.effect?.getComputedTiming().endTime)) { a.finish(); hiddenAnimations.delete(a); }
+    else if (document.hidden && a.playState === "running") { a.pause(); hiddenAnimations.add(a); }
+  });
+  if (!document.hidden) { hiddenAnimations.forEach(a => { if (motionOK() && a.playState === "paused") a.play(); }); hiddenAnimations.clear(); }
+  window.dispatchEvent(new Event("motionchange"));
+};
+motionState();
+motionPreference.addEventListener("change", () => { reduce = motionPreference.matches; motionState(); });
+document.addEventListener("visibilitychange", motionState);
 const EMAIL = "thong11042008@gmail.com";
 const GITHUB = "https://github.com/NotWutLit";
 
@@ -81,13 +99,15 @@ const typed = $("[data-type]");
 let seen = false;
 if (typed) try { seen = sessionStorage.getItem("typed") === "1"; sessionStorage.setItem("typed", "1"); } catch {}
 if (seen && typed) typed.classList.add("typed-before");
-if (typed && !seen && !reduce) {
+if (typed && !seen && motionOK()) {
   const text = typed.textContent.trim(), start = 250, per = 75;
   typed.setAttribute("aria-label", text);
   const out = document.createElement("span"); out.setAttribute("aria-hidden", "true");
   typed.replaceChildren(out);
   typed.style.setProperty("--typed-at", `${start + text.length * per}ms`);
-  [...text].forEach((ch, i) => setTimeout(() => { out.textContent += ch; }, start + i * per));
+  let finished = false;
+  [...text].forEach((ch, i) => setTimeout(() => { if (!finished) out.textContent = motionOK() ? text.slice(0, i + 1) : text; }, start + i * per));
+  addEventListener("motionchange", () => { if (!motionOK()) { finished = true; out.textContent = text; } });
 }
 
 /* ---------- 3D titles ---------- */
@@ -133,7 +153,7 @@ if (typed && !seen && !reduce) {
   titles.forEach(el => observer.observe(el));
   addEventListener("pointermove", e => {
     mx = e.clientX; my = e.clientY;
-    if (raf || !visible.size) return;
+    if (raf || !visible.size || !motionOK() || document.hidden) return;
     raf = requestAnimationFrame(() => {
       raf = 0;
       visible.forEach(el => {
@@ -150,13 +170,14 @@ if (typed && !seen && !reduce) {
   // The document root receives pointerleave when the pointer exits the window.
   document.documentElement.addEventListener("pointerleave", resetAll, { passive: true });
   addEventListener("blur", resetAll);
+  addEventListener("motionchange", resetAll);
 })();
 
 /* ---------- Cursor spotlight + scroll progress ---------- */
 const root = document.documentElement;
 if (finePointer && !reduce) {
   let raf = 0, mx = 0, my = 0;
-  addEventListener("pointermove", e => { mx = e.clientX; my = e.clientY; if (!raf) raf = requestAnimationFrame(() => { root.style.setProperty("--mx", mx + "px"); root.style.setProperty("--my", my + "px"); raf = 0; }); }, { passive: true });
+  addEventListener("pointermove", e => { if (!motionOK() || document.hidden) return; mx = e.clientX; my = e.clientY; if (!raf) raf = requestAnimationFrame(() => { root.style.setProperty("--mx", mx + "px"); root.style.setProperty("--my", my + "px"); raf = 0; }); }, { passive: true });
 }
 const bar = document.createElement("div"); bar.className = "progress"; bar.setAttribute("aria-hidden", "true"); document.body.prepend(bar);
 const onScroll = () => { const h = root.scrollHeight - innerHeight; bar.style.setProperty("--p", h > 0 ? (scrollY / h).toFixed(4) : 0); };
@@ -172,11 +193,11 @@ $$("[data-clocks]").forEach(el => { el.classList.add("clocks"); el.innerHTML = c
 const tick = () => { const n = new Date(); $$("[data-tz=dn]").forEach(b => b.textContent = daNang.format(n)); $$("[data-tz=ath]").forEach(b => b.textContent = athens.format(n)); };
 tick(); setInterval(tick, 1000);
 
-/* ---------- Scroll reveal ---------- */
-const revealSel = "main h2, .card, .tile, .gallery figure, .resume-item, .timeline li, .photo-row, .reflection, .facts, .sec-head, .board, .outro > *, .about-head, .demo";
+/* ---------- Motion: reveals ---------- */
+const revealSel = "[data-reveal], main h2, .card, .tile, .gallery figure, .resume-item, .timeline li, .photo-row, .reflection, .facts, .sec-head, .board, .outro > *, .about-head, .demo, .skill-groups > div, .awards > li, .resume-stats > li";
 const revealEls = $$(revealSel).filter(el => !el.closest(".hero"));
 revealEls.forEach(el => {
-  el.setAttribute("data-reveal", "");
+  if (!el.hasAttribute("data-reveal")) el.setAttribute("data-reveal", "");
   const sibs = [...el.parentElement.children].filter(c => c.matches(revealSel));
   if (sibs.length > 1) el.style.setProperty("--d", Math.min(sibs.indexOf(el), 5) * 80 + "ms"); // stagger lists, capped
 });
@@ -185,19 +206,23 @@ revealEls.forEach(el => io.observe(el));
 
 /* ---------- Spotlight cards + 3D tilt ---------- */
 $$(".spot").forEach(el => el.addEventListener("pointermove", e => {
+  if (!motionOK() || document.hidden) return;
   const r = el.getBoundingClientRect(); el.style.setProperty("--x", e.clientX - r.left + "px"); el.style.setProperty("--y", e.clientY - r.top + "px");
 }));
 if (finePointer && !reduce) {
   $$("[data-tilt]").forEach(el => {
     const max = +el.dataset.tilt || 6;
     el.addEventListener("pointermove", e => {
+      if (!motionOK() || document.hidden || innerWidth < 600) return;
       const r = el.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
       el.style.transform = `perspective(1000px) rotateX(${(-py * max).toFixed(2)}deg) rotateY(${(px * max).toFixed(2)}deg)`;
     });
     el.addEventListener("pointerleave", () => { el.style.transform = ""; });
+    addEventListener("motionchange", () => { el.style.transform = ""; });
   });
   const hp = $(".hero-photo .polaroid");
   if (hp) addEventListener("pointermove", e => {
+    if (!motionOK() || document.hidden) return;
     const px = e.clientX / innerWidth - .5, py = e.clientY / innerHeight - .5;
     hp.style.setProperty("--ty", (px * 16).toFixed(2) + "deg"); hp.style.setProperty("--tx", (-py * 12).toFixed(2) + "deg");
   }, { passive: true });
@@ -206,13 +231,14 @@ if (finePointer && !reduce) {
 /* ---------- Golden Peace: CSS 3D phone turns as you scroll ---------- */
 const p3 = $(".phone3d img");
 if (p3 && !reduce) {
-  const upd = () => { const t = Math.min(scrollY / 600, 1); p3.style.setProperty("--ry", (-14 + t * 28).toFixed(2) + "deg"); p3.style.setProperty("--rx", (6 - t * 6).toFixed(2) + "deg"); };
+  const upd = () => { if (!motionOK() || document.hidden || p3.getBoundingClientRect().bottom < 0) return; const t = Math.min(scrollY / 600, 1); p3.style.setProperty("--ry", (-14 + t * 28).toFixed(2) + "deg"); p3.style.setProperty("--rx", (6 - t * 6).toFixed(2) + "deg"); };
   addEventListener("scroll", upd, { passive: true }); upd();
 }
 
 /* ---------- Parallax on the Đà Nẵng tile ---------- */
 const par = $(".b-home img");
 if (par && !reduce) addEventListener("scroll", () => {
+  if (!motionOK() || document.hidden) return;
   const r = par.parentElement.getBoundingClientRect(); par.style.setProperty("--par", ((r.top - innerHeight / 2) * -.06).toFixed(1) + "px");
 }, { passive: true });
 
@@ -222,11 +248,12 @@ if (scr) {
   const phrases = JSON.parse(scr.dataset.phrases || "[]"), glyphs = "!<>-_\\/[]{}=+*^?#01";
   let idx = 0;
   const to = (next) => new Promise(done => {
-    if (reduce) { scr.textContent = next; return done(); }
+    if (!motionOK()) { scr.textContent = next; return done(); }
     const from = scr.textContent, len = Math.max(from.length, next.length), q = [];
     for (let i = 0; i < len; i++) { const s = Math.floor(Math.random() * 18), e = s + 8 + Math.floor(Math.random() * 18); q.push({ from: from[i] || "", to: next[i] || "", s, e }); }
     let f = 0;
     const step = () => {
+      if (!motionOK() || document.hidden || scr.getBoundingClientRect().bottom < 0) { scr.textContent = next; return done(); }
       let html = "", doneCount = 0;
       for (const c of q) {
         if (f >= c.e) { doneCount++; html += c.to; }
@@ -238,7 +265,7 @@ if (scr) {
     };
     step();
   });
-  const loop = async () => { idx = (idx + 1) % phrases.length; await to(phrases[idx]); setTimeout(loop, 2600); };
+  const loop = async () => { if (motionOK() && !document.hidden && scr.getBoundingClientRect().bottom > 0) { idx = (idx + 1) % phrases.length; await to(phrases[idx]); } setTimeout(loop, 2600); };
   if (phrases.length > 1) setTimeout(loop, 2600);
 }
 
@@ -272,10 +299,9 @@ $$(".flip").forEach(f => {
 /* ---------- Timeline draws itself ---------- */
 $$(".timeline").forEach(t => {
   if (reduce) return;
-  const upd = () => { const r = t.getBoundingClientRect(); const p = Math.min(Math.max((innerHeight * .8 - r.top) / r.height, 0), 1); t.style.setProperty("--drawn", p.toFixed(3)); };
+  const upd = () => { if (!motionOK() || document.hidden) return; const r = t.getBoundingClientRect(); const p = Math.min(Math.max((innerHeight * .8 - r.top) / r.height, 0), 1); t.style.setProperty("--drawn", p.toFixed(3)); };
   addEventListener("scroll", upd, { passive: true }); upd();
 });
-if (!reduce) $$(".resume-item").forEach(it => { it.style.setProperty("--drawn", 0); it.addEventListener("revealed", () => it.style.setProperty("--drawn", 1)); });
 
 /* ---------- Toast ---------- */
 const toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.append(toastEl);
@@ -302,6 +328,17 @@ const tools = document.createElement("div"); tools.className = "tools";
 tools.innerHTML = `<button class="chip-btn keyring" type="button" aria-label="Escape room: keys found">${KEY_SVG.replace('aria-hidden="true"', 'aria-hidden="true" width="16" height="16"')}<span class="slots">${ROOMS.map(() => "<i></i>").join("")}</span><span class="count"></span></button>
   <button class="chip-btn cmdk" type="button" aria-label="Open command palette"><kbd>${/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl"} K</kbd></button>`;
 nav?.append(tools);
+const motionButton = document.createElement("button");
+motionButton.className = "chip-btn motion-toggle"; motionButton.type = "button";
+tools.append(motionButton);
+const paintMotion = () => {
+  const label = motionPaused ? "Play motion" : "Pause motion";
+  motionButton.setAttribute("aria-pressed", String(motionPaused));
+  motionButton.setAttribute("aria-label", label); motionButton.title = label;
+  motionButton.innerHTML = `<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="currentColor">${motionPaused ? '<path d="m4 2 10 6-10 6Z"/>' : '<path d="M3 2h3v12H3zm7 0h3v12h-3z"/>'}</svg><span>${label}</span>`;
+};
+motionButton.addEventListener("click", () => { motionPaused = !motionPaused; store.set("tt-motion", motionPaused); motionState(); });
+addEventListener("motionchange", paintMotion); paintMotion();
 const ring = $(".keyring", tools);
 const flyingKeys = new Set();
 function paintRing() {
@@ -331,7 +368,7 @@ function collect(id, el) {
 /* ---------- Key collection flight ---------- */
 function flyKey(el, index) {
   const slot = $$(".slots i", ring)[index], icon = el?.querySelector("svg");
-  if (reduce || !icon || !slot || !ring.isConnected) return;
+  if (!motionOK() || document.hidden || !icon || !slot || !ring.isConnected) return;
   // Hold only the travelling slot so the accessible count can update immediately.
   flyingKeys.add(index);
   const a = icon.getBoundingClientRect(), b = slot.getBoundingClientRect();
@@ -355,6 +392,7 @@ function flyKey(el, index) {
   });
   const arrive = () => {
     flyingKeys.delete(index); paintRing(); layer.remove();
+    if (!motionOK() || document.hidden) return;
     slot.animate([{ transform: "scale(.6)" }, { transform: "scale(1.6)", offset: .55 }, { transform: "scale(1)" }], { duration: 360, easing: "ease-out" });
     ring.classList.add("bump"); ring.addEventListener("animationend", () => ring.classList.remove("bump"), { once: true });
     const glint = document.createElement("i"); glint.className = "keyring-glint"; glint.setAttribute("aria-hidden", "true"); ring.append(glint);
@@ -428,7 +466,7 @@ if (navLinks.length) {
   };
   addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(spy); }, { passive: true }); spy();
 }
-$("[data-print]")?.addEventListener("click", () => print());
+$("[data-print]")?.addEventListener("click", () => window.print());
 
 /* ---------- Dialog helper ---------- */
 function makeDialog(cls, html, label) {
@@ -485,7 +523,7 @@ function giveCookie() {
   d.showModal(); confetti(); chibiCheer();
 }
 function crumbs(el) {
-  if (reduce) return;
+  if (!motionOK() || document.hidden) return;
   for (let i = 0; i < 10; i++) {
     const s = document.createElement("i"); s.className = "crumb";
     s.style.setProperty("--dx", (Math.random() - .5) * 160 + "px"); s.style.setProperty("--dy", 60 + Math.random() * 120 + "px");
@@ -493,18 +531,18 @@ function crumbs(el) {
     el.append(s); setTimeout(() => s.remove(), 900);
   }
 }
+/* ---------- Motion: reward ---------- */
 function confetti() {
-  if (reduce) return;
-  const c = document.createElement("canvas"); c.className = "confetti"; document.body.append(c);
-  const ctx = c.getContext("2d"), dpr = devicePixelRatio || 1; c.width = innerWidth * dpr; c.height = innerHeight * dpr; ctx.scale(dpr, dpr);
-  const cols = ["#E8B651", "#F4D58D", "#6FA8FF", "#ECE8DF"];
-  const ps = Array.from({ length: 140 }, () => ({ x: innerWidth / 2, y: innerHeight / 2, vx: (Math.random() - .5) * 16, vy: Math.random() * -14 - 4, s: 4 + Math.random() * 6, r: Math.random() * 6, c: cols[Math.floor(Math.random() * 4)] }));
-  let t = 0;
-  (function frame() {
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
-    ps.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += .1; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); });
-    if (++t < 160) requestAnimationFrame(frame); else c.remove();
-  })();
+  if (!motionOK() || document.hidden) return;
+  // DOM sparks keep the reward within the one-canvas budget, including Home.
+  const layer = document.createElement("div"); layer.className = "confetti"; layer.setAttribute("aria-hidden", "true");
+  for (let i = 0; i < (finePointer ? 48 : 20); i++) {
+    const spark = document.createElement("i");
+    spark.style.setProperty("--dx", `${(Math.random() - .5) * innerWidth}px`);
+    spark.style.setProperty("--dy", `${80 + Math.random() * innerHeight / 2}px`);
+    spark.style.background = ["#E8B651", "#F4D58D", "#6FA8FF", "#ECE8DF"][i % 4]; layer.append(spark);
+  }
+  document.body.append(layer); setTimeout(() => layer.remove(), 1800);
 }
 
 /* ---------- Terminal ---------- */
@@ -523,7 +561,7 @@ const CMDS = {
 <b>about me</b>      ${c("whoami")}  ${c("about")}  ${c("skills")}  ${c("projects")}  ${c("contact")}
 <b>go somewhere</b>  ${c("open ", "open <page>", 1)}  ${c("ls")}
 <b>terminal</b>      ${c("clear")}  ${c("exit")}
-<span class="dim">tip: click any gold word. Tab completes, ↑ ↓ brings back what you typed.</span>`),
+<span class="dim">tip: click any gold word. Tab or → completes, ↑ ↓ brings back what you typed.</span>`),
   whoami: () => print("Thong Thai. CS student at the University of Georgia, from Đà Nẵng, Vietnam. I build apps for the people around me."),
   about: () => print("Grew up in a three-generation home in Đà Nẵng. My grandmother wanted peace in the family; my father wanted to watch his children grow up. I build so I can be there for others."),
   projects: () => print(`golden-peace   wellness app for older adults in Vietnam (React Native, Expo, Supabase)\nremember-me    diary app for people living with Alzheimer’s (Flutter, Firebase)\n<span class="dim">try:</span> ${c("open golden-peace")}  ${c("open remember-me")}`),
@@ -581,9 +619,12 @@ function run(raw) {
 }
 $(".term-in", term).addEventListener("submit", e => { e.preventDefault(); const v = tin.value; tin.value = ""; run(v); });
 tin.addEventListener("keydown", e => {
-  if (e.key === "Tab") {
-    e.preventDefault(); const v = tin.value.toLowerCase();
+  if ((e.key === "Tab" && !e.shiftKey) || (e.key === "ArrowRight" && tin.selectionStart === tin.value.length && tin.selectionEnd === tin.value.length)) {
+    const v = tin.value.toLowerCase();
+    if (!v.trim()) return;
     const opts = COMPLETE.filter(x => x.startsWith(v));
+    if (!opts.length || (opts.length === 1 && opts[0] === v)) return;
+    e.preventDefault();
     if (opts.length === 1) tin.value = opts[0];
     else if (opts.length > 1) { let pre = opts[0]; opts.forEach(o => { while (!o.startsWith(pre)) pre = pre.slice(0, -1); }); tin.value = pre; if (v) print(opts.map(o => c(o)).join("  "), "dim"); }
   } else if (e.key === "ArrowUp" && hist.length) { e.preventDefault(); hpos = Math.max(0, hpos - 1); tin.value = hist[hpos]; }
@@ -688,7 +729,7 @@ document.body.append(chibi, bubble);
 
 let cx = -90, running = false, paused = false, act = document.body.dataset.chibi || "wave", bubbleT;
 const phoneChibi = matchMedia("(max-width: 640px)");
-let entering = !reduce && !phoneChibi.matches;
+let entering = motionOK() && finePointer && !phoneChibi.matches;
 const setX = x => { cx = x; chibi.style.setProperty("--cx", x + "px"); };
 const ACTS = ["wave", "laptop", "camera", "racket", "read"];
 function showAct() { ACTS.forEach(a => chibi.classList.toggle("act-" + a, !entering && !running && a === act)); }
@@ -705,12 +746,13 @@ if (watched.length) {
 }
 
 function goTo(target) {
-  if (reduce || running || entering || phoneChibi.matches) return;
+  if (!motionOK() || document.hidden || running || entering || phoneChibi.matches || !finePointer) return;
   running = true; showAct();
   const dir = Math.sign(target - cx) || 1;
   chibi.classList.add("running"); chibi.classList.toggle("flip", dir < 0);
   let last = performance.now();
   const frame = now => {
+    if (!motionOK() || document.hidden) { running = false; chibi.classList.remove("running", "flip"); showAct(); return; }
     const dt = Math.min(now - last, 50); last = now;
     if (!paused) setX(cx + dir * dt * .17);
     if ((dir > 0 && cx >= target) || (dir < 0 && cx <= target)) {
@@ -728,7 +770,7 @@ function say(text) {
 }
 chibi.addEventListener("click", () => { if (entering) return; paused = true; chibi.classList.remove("running"); say(hintText()); });
 function chibiCheer() {
-  if (reduce || entering) return;
+  if (!motionOK() || document.hidden || entering) return;
   chibi.classList.add("cheer"); setTimeout(() => chibi.classList.remove("cheer"), 1400);
 }
 if (!entering) { setX(reduce ? 12 : Math.min(innerWidth * .18, 220)); showAct(); }
@@ -745,15 +787,29 @@ if (!reduce) {
 
 /* ---------- Chibi: six ways to arrive ---------- */
 function chibiEntrance() {
-  const target = Math.min(innerWidth * .18, 220), height = innerHeight;
+  const target = innerWidth - 88;
   const land = () => { entering = false; chibi.disabled = false; chibi.style.opacity = ""; chibi.classList.remove("running", "flip"); setX(Math.min(target, innerWidth - 80)); showAct(); };
-  if (phoneChibi.matches) { land(); return; }
+  if (phoneChibi.matches || !motionOK() || document.hidden) { land(); return; }
+  // Only use clear space below visible text in the right-hand decoration margin.
+  let textBottom = innerHeight - 245;
+  const walker = document.createTreeWalker($("main"), NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (!node.textContent.trim() || node.parentElement.closest('[aria-hidden="true"]')) continue;
+    const range = document.createRange(); range.selectNodeContents(node);
+    for (const r of range.getClientRects()) if (r.right > innerWidth - 190 && r.top < innerHeight) textBottom = Math.max(textBottom, r.bottom);
+  }
+  const band = Math.min(245, innerHeight - textBottom - 12);
+  if (band < 110) { land(); return; }
   const names = ["helicopter", "tsunami", "parachute", "rocket", "portal", "run"];
   let previous; try { previous = sessionStorage.getItem("chibi-entrance"); } catch {}
   const choices = names.filter(n => n !== previous), forced = new URLSearchParams(location.search).get("entrance");
   const name = names.includes(forced) ? forced : choices[Math.floor(Math.random() * choices.length)];
   try { sessionStorage.setItem("chibi-entrance", name); } catch {}
   const layer = document.createElement("div"); layer.className = `chibi-entrance entrance-${name}`; layer.setAttribute("aria-hidden", "true");
+  // Flights stay in the bottom decoration band, below the hero reading area.
+  layer.classList.add("entrance-bottom");
+  layer.style.height = `${band}px`; layer.style.clipPath = "inset(0 0 0 calc(100% - 190px))";
   document.body.append(layer); layer.append(chibi); setX(target);
   const duration = name === "run" ? 1700 : 2400, animations = [];
   const animate = (el, frames) => { const a = el.animate(frames, { duration, fill: "both", easing: "linear" }); animations.push(a); return a; };
@@ -766,12 +822,12 @@ function chibiEntrance() {
   };
   let points;
   if (name === "helicopter") {
-    const drop = Math.max(140, height - 258), heli = prop("helicopter", target - 43, height - 188, 150, 82,
+    const drop = 65, heli = prop("helicopter", target - 43, 145, 150, 82,
       '<path d="M73 8v17M19 8h112M42 67h63M50 57l-5 10m49-10 5 10" stroke="#F4D58D" stroke-width="4" stroke-linecap="round"/><path d="M27 39L5 25v28l28-5" fill="#1A2550" stroke="#E8B651" stroke-width="2"/><rect x="32" y="26" width="86" height="33" rx="16" fill="#111A38" stroke="#E8B651" stroke-width="2"/><path d="M80 29h19q14 2 15 16H80z" fill="#6FA8FF"/><circle cx="55" cy="42" r="6" fill="#F4D58D"/><path class="rotor" d="M12 8h126" stroke="#F3EAD6" stroke-width="3"/>');
-    animate(heli, route([[0, innerWidth - target, -160, -12], [.22, 0, 0], [.68, 0, -5], [.8, 12, -12], [1, innerWidth - target, -190, 15]]));
+    animate(heli, route([[0, 180, 0, -12], [.22, 0, 0], [.68, 0, -5], [.8, 12, -12], [1, 200, -10, 15]]));
     const rope = prop("rope", target + 31, 90, 2, drop, `<path d="M1 0v${drop}" stroke="#F4D58D" stroke-width="2" stroke-dasharray="4 3"/>`);
     animate(rope, [{ transform: "scaleY(0)", opacity: 0 }, { transform: "scaleY(0)", opacity: 1, offset: .22 }, { transform: "scaleY(1)", opacity: 1, offset: .72 }, { transform: "scaleY(0)", opacity: 0, offset: .88 }, { opacity: 0 }]);
-    points = [[0, 0, -height], [.22, 0, -drop], [.42, 7, -drop * .65, 8], [.72, 0, 0], [.79, 0, 0, 0, .88], [.86, 0, -10], [1, 0, 0]];
+    points = [[0, 150, -drop], [.22, 0, -drop], [.42, 7, -drop * .65, 8], [.72, 0, 0], [.79, 0, 0, 0, .88], [.86, 0, -10], [1, 0, 0]];
   } else if (name === "tsunami") {
     const wave = prop("wave", target - 130, 0, 300, 126,
       '<path d="M0 126V92q45-3 77-48C126-19 230 4 216 61q-9 29-43 15 31-5 19-26-17-25-41 12 28 44 149 45v19z" fill="#1A2550" stroke="#6FA8FF" stroke-width="3"/><path d="M5 94q47-4 82-48C126-5 222 7 211 55q-5 25-32 19 31-10 10-28-23-16-46 21" stroke="#F3EAD6" stroke-width="7" stroke-linecap="round"/><path d="M27 111q46-23 83-18t69 17 92 2" stroke="#6FA8FF" stroke-width="3"/>');
@@ -782,7 +838,7 @@ function chibiEntrance() {
       animate(drop, [{ transform: "translate(-90px,0) scale(0)", opacity: 0 }, { transform: `translate(0,${-60 - i * 16}px) scale(1)`, opacity: 1, offset: .5 }, { transform: `translate(${60 + i * 16}px,30px) scale(.3)`, opacity: 0, offset: .85 }, { opacity: 0 }]);
     }
   } else if (name === "parachute") {
-    points = [[0, 38, -height - 120, -12], [.25, -28, -height * .65, 12], [.48, 22, -height * .35, -10], [.7, -8, -50, 6], [.8, 0, 0, 0, .88], [.88, 0, -8], [1, 0, 0]];
+    points = [[0, 110, -90, -12], [.25, 12, -65, 12], [.48, 8, -35, -10], [.7, 0, -15, 6], [.8, 0, 0, 0, .88], [.88, 0, -8], [1, 0, 0]];
     const canopy = prop("parachute", target - 38, 80, 140, 140,
       '<path d="M3 55C9-16 131-16 137 55q-18-14-34 0-17-14-33 0-17-14-34 0-17-14-33 0" fill="#E8B651" stroke="#F4D58D" stroke-width="2"/><path d="M70 3Q40 18 36 55m34-52q30 15 33 52M3 55l67 82 67-82m-101 0 34 82 33-82" stroke="#F3EAD6" stroke-width="1.5"/>');
     animate(canopy, route([...points.slice(0, 5), [.9, 0, -25, 15, .3], [1, 18, -20, 25, 0]]).map((f, i) => ({ ...f, opacity: i < 5 ? 1 : i === 5 ? .5 : 0 })));
@@ -806,9 +862,11 @@ function chibiEntrance() {
     animations.forEach(a => a.cancel()); document.body.append(chibi); layer.remove(); land();
   };
   // Resizing into the phone header must cancel the desktop flight immediately.
-  const resize = () => { if (phoneChibi.matches) finish(); };
+  const resize = () => { if (phoneChibi.matches || !motionOK() || document.hidden) finish(); };
   phoneChibi.addEventListener("change", resize);
-  arrival.finished.then(finish, finish).finally(() => phoneChibi.removeEventListener("change", resize));
+  addEventListener("motionchange", resize);
+  addEventListener("scroll", finish, { once: true, passive: true }); addEventListener("resize", finish, { once: true });
+  arrival.finished.then(finish, finish).finally(() => { phoneChibi.removeEventListener("change", resize); removeEventListener("motionchange", resize); removeEventListener("scroll", finish); removeEventListener("resize", finish); });
 }
 
 /* ---------- Hobby scenes play only while visible ---------- */
@@ -823,3 +881,124 @@ if ($("#city")) {
   const go = () => import("./hero3d.js").catch(() => {});
   if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 1500 }); else setTimeout(go, 400);
 }
+
+/* ---------- Motion: starfield ---------- */
+(() => {
+  if (!["about", "projects", "resume", "gp"].includes(page)) return;
+  const canvas = document.createElement("canvas"); canvas.className = "starfield"; canvas.setAttribute("aria-hidden", "true");
+  document.body.prepend(canvas);
+  const ctx = canvas.getContext("2d"); if (!ctx) return;
+  let stars = [], width = 0, height = 0, raf = 0, last = 0, time = 0, next = 8 + Math.random() * 7, shot = null, visible = true;
+  const light = () => innerWidth < 600 || !finePointer;
+  const draw = () => {
+    ctx.clearRect(0, 0, width, height);
+    stars.forEach(s => {
+      const y = ((s.y - (motionOK() ? scrollY * s.depth : 0)) % height + height) % height;
+      ctx.globalAlpha = s.alpha * (motionOK() ? .7 + .3 * Math.sin(time * s.speed + s.phase) : .85);
+      ctx.fillStyle = s.gold ? "#F4D58D" : "#6FA8FF";
+      ctx.beginPath(); ctx.arc(s.x, y, s.radius, 0, Math.PI * 2); ctx.fill();
+    });
+    if (shot && motionOK()) {
+      const p = (time - shot.start) / .85;
+      if (p > 1) shot = null;
+      else {
+        ctx.globalAlpha = Math.sin(p * Math.PI) * .65;
+        const x = shot.x + p * 200, y = shot.y + p * 90;
+        const trail = ctx.createLinearGradient(x - 65, y - 29, x, y); trail.addColorStop(0, "transparent"); trail.addColorStop(1, "#F4D58D");
+        ctx.strokeStyle = trail; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x - 65, y - 29); ctx.lineTo(x, y); ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+  };
+  const frame = now => {
+    raf = 0; if (!motionOK() || document.hidden || !visible) return;
+    if (now - last >= (light() ? 65 : 32)) {
+      time += Math.min((now - last) / 1000, .1); last = now;
+      if (time > next) { shot = { x: Math.random() * width * .7, y: Math.random() * height * .35, start: time }; next = time + 8 + Math.random() * 7; }
+      draw();
+    }
+    raf = requestAnimationFrame(frame);
+  };
+  const sync = () => {
+    cancelAnimationFrame(raf); raf = 0; last = performance.now();
+    if (!motionOK()) shot = null;
+    draw(); if (motionOK() && !document.hidden && visible) raf = requestAnimationFrame(frame);
+  };
+  const resize = () => {
+    width = innerWidth; height = innerHeight; const dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = width * dpr; canvas.height = height * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    stars = Array.from({ length: Math.min(160, Math.round(width * height / (light() ? 18000 : 9500))) }, () => ({ x: Math.random() * width, y: Math.random() * height, radius: .4 + Math.random() * .8, alpha: .2 + Math.random() * .4, speed: .4 + Math.random(), phase: Math.random() * 6.28, depth: .008 + Math.random() * .018, gold: Math.random() > .65 }));
+    sync();
+  };
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }).observe(canvas);
+  addEventListener("motionchange", sync); addEventListener("resize", resize); resize();
+})();
+
+/* ---------- Motion: count-ups ---------- */
+const countJobs = new WeakMap();
+function countUp(el) {
+  if (countJobs.has(el)) return;
+  const final = el.textContent, match = final.match(/[\d,]+(?:\.\d+)?/);
+  if (!match) return;
+  const goal = Number(match[0].replaceAll(",", "")), from = Number(el.dataset.countFrom || 0), decimals = (match[0].split(".")[1] || "").length;
+  const animated = document.createElement("span"), accessible = document.createElement("span");
+  animated.setAttribute("aria-hidden", "true"); accessible.className = "sr-only"; accessible.textContent = final;
+  el.replaceChildren(animated, accessible);
+  let elapsed = 0, last = 0, raf = 0, visible = false, done = false;
+  const finish = () => { done = true; cancelAnimationFrame(raf); el.textContent = final; observer.disconnect(); removeEventListener("motionchange", sync); };
+  const frame = now => {
+    raf = 0; if (!visible || document.hidden || done) return;
+    if (!motionOK()) return finish();
+    elapsed += last ? Math.min(now - last, 50) : 0; last = now;
+    const p = Math.min(elapsed / (innerWidth < 600 || !finePointer ? 600 : 1100), 1);
+    const value = from + (goal - from) * (1 - (1 - p) ** 3);
+    const number = value.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping: match[0].includes(",") });
+    animated.textContent = final.slice(0, match.index) + number + final.slice(match.index + match[0].length);
+    if (p === 1) finish(); else raf = requestAnimationFrame(frame);
+  };
+  const sync = () => {
+    cancelAnimationFrame(raf); raf = 0; last = 0;
+    if (!motionOK()) return finish();
+    if (visible && !document.hidden && !done) raf = requestAnimationFrame(frame);
+  };
+  const observer = new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }, { threshold: .2 });
+  countJobs.set(el, finish); addEventListener("motionchange", sync); animated.textContent = final; observer.observe(el); sync();
+}
+$$('[data-count]').forEach(el => {
+  const parent = el.closest("[data-reveal]");
+  if (!parent || parent.classList.contains("in") || !motionOK()) countUp(el);
+  else parent.addEventListener("revealed", () => countUp(el), { once: true });
+});
+addEventListener("beforeprint", () => $$('[data-count]').forEach(el => countJobs.get(el)?.()));
+
+/* ---------- Motion: résumé progress ---------- */
+(() => {
+  const items = $$(".resume-item"); if (!items.length) return;
+  const visible = new Set(); let raf = 0;
+  const update = () => {
+    raf = 0; if (document.hidden) return;
+    let current = null;
+    items.forEach(el => { if (visible.has(el) && el.getBoundingClientRect().top < innerHeight * .6) current = el; });
+    items.forEach(el => el.classList.toggle("timeline-current", el === current && motionOK()));
+    visible.forEach(el => {
+      const r = el.getBoundingClientRect(), p = motionOK() ? Math.max(0, Math.min(1, (innerHeight * .6 - r.top) / r.height)) : 1;
+      el.style.setProperty("--drawn", p.toFixed(3));
+    });
+    navLinks.forEach(a => {
+      const r = $(a.getAttribute("href")).getBoundingClientRect();
+      a.style.setProperty("--section-progress", motionOK() ? Math.max(0, Math.min(1, (innerHeight * .35 - r.top) / r.height)).toFixed(3) : 1);
+    });
+  };
+  const request = () => { if (!raf) raf = requestAnimationFrame(update); };
+  const observer = new IntersectionObserver(entries => { entries.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)); request(); });
+  items.forEach(el => observer.observe(el));
+  addEventListener("scroll", request, { passive: true }); addEventListener("resize", request); addEventListener("motionchange", request); update();
+})();
+
+/* ---------- Motion: ambient visibility ---------- */
+(() => {
+  // Pause inherited loops as well as the new desk effect when their scene leaves view.
+  const observer = new IntersectionObserver(entries => entries.forEach(e => e.target.classList.toggle("motion-offscreen", !e.isIntersecting)));
+  $$(".illo, .hobby, .ticker, .clocks, .reflection, .phone3d, .scroll-cue, .chibi, .key, .env").forEach(el => observer.observe(el));
+  $$(".skill-groups .tags li").forEach(el => el.style.setProperty("--chip-delay", `${[...el.parentElement.children].indexOf(el) * 55}ms`));
+})();

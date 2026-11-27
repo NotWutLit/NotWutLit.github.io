@@ -4,6 +4,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 
 const canvas = document.getElementById("city");
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const motionOK = () => window.motionOK?.() ?? !reduce;
 
 // 1. Sample the photo: bright pixels become lights, a sparse sample of the rest gives the city its shape
 const img = new Image();
@@ -93,14 +94,19 @@ resize(); addEventListener("resize", resize);
 
 let mx = 0, my = 0, visible = true, raf = 0;
 addEventListener("pointermove", e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
-new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !raf && !reduce) loop(); }).observe(canvas);
-document.addEventListener("visibilitychange", () => { if (!document.hidden && visible && !raf && !reduce) loop(); });
+new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !raf && motionOK()) loop(); }).observe(canvas);
+const syncMotion = () => {
+  cancelAnimationFrame(raf); raf = 0;
+  if (!motionOK()) { mat.uniforms.uT.value = 1.4; renderer.render(scene, camera); }
+  else if (!document.hidden && visible) { clock.getDelta(); loop(); }
+};
+addEventListener("motionchange", syncMotion);
 
 const clock = new THREE.Clock();
 const baseZ = () => (canvas.clientWidth < 700 ? 17 : 13);
 function loop() {
   raf = 0;
-  if (!visible || document.hidden) return;
+  if (!visible || document.hidden || !motionOK()) return;
   const dt = Math.min(clock.getDelta(), .05);
   mat.uniforms.uTime.value += dt;
   if (mat.uniforms.uT.value < 1.4) mat.uniforms.uT.value += dt / 2.2;    // ~2s assembly
@@ -113,4 +119,4 @@ function loop() {
   raf = requestAnimationFrame(loop);
 }
 canvas.classList.add("ready");
-if (reduce) renderer.render(scene, camera); else loop();
+syncMotion();
