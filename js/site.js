@@ -5,6 +5,65 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = matchMedia("(pointer: fine)").matches;
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+// Keep navigation directional while leaving the header and shared phone independent.
+(() => {
+  const orders = { "index.html": 0, "about.html": 1, "projects.html": 2, "resume.html": 3, "golden-peace.html": 2.5 };
+  const motion = matchMedia("(prefers-reduced-motion: reduce)");
+  const order = url => {
+    if (url == null) return;
+    try { return orders[new URL(url, location.href).pathname.split("/").pop() || "index.html"]; } catch {}
+  };
+  const direction = (e, from, to) => {
+    if (!e.viewTransition || motion.matches) return;
+    const a = order(from), b = order(to);
+    if (typeof a === "number" && typeof b === "number" && a !== b) e.viewTransition?.types?.add(b > a ? "forward" : "back");
+  };
+  addEventListener("pageswap", e => {
+    if (!e.viewTransition) return;
+    const from = e.activation?.from?.url, to = e.activation?.entry?.url;
+    direction(e, from, to);
+    // Safari 18.2 has transition events before it has navigation.activation.
+    try { sessionStorage.setItem("page-transition", JSON.stringify({ from, to })); } catch {}
+  });
+  addEventListener("pagereveal", e => {
+    if (!e.viewTransition) return;
+    let saved;
+    try { saved = JSON.parse(sessionStorage.getItem("page-transition")); sessionStorage.removeItem("page-transition"); } catch {}
+    const activation = window.navigation?.activation;
+    if (activation) direction(e, activation.from?.url, activation.entry?.url);
+    else if (saved?.to === location.href) direction(e, saved.from, saved.to);
+  });
+
+  // A real element lets only the current-link dot glide between header snapshots.
+  const current = $("header nav a[aria-current]");
+  if (current) {
+    const dot = document.createElement("span");
+    dot.className = "nav-dot"; dot.setAttribute("aria-hidden", "true"); current.append(dot);
+  }
+
+  if (!("onpagereveal" in window) || !window.CSS?.supports("view-transition-name: none")) {
+    const html = document.documentElement;
+    html.classList.add("no-vt");
+    let leaving = false, timer;
+    document.addEventListener("click", e => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || motion.matches) return;
+      const link = e.target.closest("a[href]");
+      if (!link || link.hasAttribute("download") || (link.target && link.target.toLowerCase() !== "_self")) return;
+      const url = new URL(link.href), here = new URL(location.href);
+      if (url.origin !== here.origin || !/\.html$/i.test(url.pathname) || (url.pathname === here.pathname && url.search === here.search)) return;
+      e.preventDefault();
+      if (leaving) return;
+      leaving = true; html.classList.add("page-leaving");
+      timer = setTimeout(() => location.assign(url.href), 180);
+    });
+    // Restored history entries must never retain the outgoing fade.
+    addEventListener("pageshow", e => {
+      if (e.persisted) { clearTimeout(timer); leaving = false; html.classList.remove("page-leaving"); }
+    });
+  }
+})();
+
 const store = { // localStorage can be blocked; the site still works without it
   get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },

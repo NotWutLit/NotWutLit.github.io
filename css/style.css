@@ -91,7 +91,7 @@ nav { display: flex; align-items: center; gap: .5rem 1rem; flex-wrap: wrap; }
 nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 1.1rem; }
 nav a { color: var(--muted); text-decoration: none; font-size: 16px; display: inline-flex; align-items: center; min-height: 44px; position: relative; transition: color .15s; }
 nav a:hover, nav a[aria-current] { color: var(--text); }
-nav a[aria-current]::after { content: ""; position: absolute; left: 50%; bottom: 6px; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); transform: translateX(-50%); box-shadow: 0 0 8px var(--gold); }
+nav .nav-dot { position: absolute; left: 50%; bottom: 6px; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); transform: translateX(-50%); box-shadow: 0 0 8px var(--gold); view-transition-name: nav-dot; }
 .tools { display: flex; gap: .5rem; align-items: center; }
 .chip-btn { font: 500 13px/1 var(--mono); color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
   min-height: 36px; padding: 0 .8rem; display: inline-flex; align-items: center; gap: .45rem; cursor: pointer; transition: color .15s, border-color .15s, background .15s; }
@@ -421,10 +421,34 @@ dialog[open] { animation: pop .3s var(--ease-out); }
 
 /* ---------- Page transitions ---------- */
 @view-transition { navigation: auto; }
+main { view-transition-name: page; }
+footer { view-transition-name: site-footer; }
 .vt-gp { view-transition-name: gp-phone; }
 ::view-transition-group(*) { animation-duration: .45s; animation-timing-function: var(--ease-out); }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .25s; }
 ::view-transition-old(gp-phone), ::view-transition-new(gp-phone) { animation-duration: .15s; }
+
+/* Named snapshots let the page slide without clipping the shared phone or header. */
+html:active-view-transition-type(forward) { --page-shift: 40px; }
+html:active-view-transition-type(back) { --page-shift: -40px; }
+html:active-view-transition-type(forward)::view-transition-old(page),
+html:active-view-transition-type(back)::view-transition-old(page) { animation: page-slide-out .38s var(--ease-out) both; }
+html:active-view-transition-type(forward)::view-transition-new(page),
+html:active-view-transition-type(back)::view-transition-new(page) { animation: page-slide-in .38s var(--ease-out) both; }
+@keyframes page-slide-out {
+  from { opacity: 1; transform: translateX(0); filter: blur(0); }
+  to { opacity: 0; transform: translateX(calc(-1 * var(--page-shift))); filter: blur(4px); }
+}
+@keyframes page-slide-in {
+  from { opacity: 0; transform: translateX(var(--page-shift)); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Browsers without document transitions still get a brief arrival and departure. */
+html.no-vt main { animation: page-in .35s var(--ease-out) both; }
+html.no-vt.page-leaving main { animation: page-out .18s ease-out both; }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes page-out { from { opacity: 1; } to { opacity: 0; } }
 
 /* ---------- Utilities ---------- */
 .skip-link { position: absolute; top: 1rem; left: 1rem; z-index: 100; padding: .6rem 1rem; background: var(--bg-2); color: var(--text); border: 1px solid var(--gold); border-radius: 10px; transform: translateY(-200%); }
@@ -440,6 +464,7 @@ dialog[open] { animation: pop .3s var(--ease-out); }
   .reflection::before { animation: none; }
   .key { animation: none; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+  html.no-vt main { animation: none !important; }
   .phone3d img, .hero-photo .polaroid { transform: rotate(var(--r, 0deg)); }
 }
 
@@ -753,7 +778,6 @@ section:has(> .side-photo)::after { content: ""; display: table; clear: both; } 
 
 /* résumé menu: a vertical list, not the header nav row */
 .resume-nav ul { display: block; }
-.resume-nav a[aria-current]::after { display: none; }
 @media (min-width: 640px) { .awards { grid-template-columns: repeat(2, 1fr); } }
 
 /* print: dark text everywhere on white paper */
