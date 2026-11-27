@@ -142,10 +142,11 @@ if (board && matchMedia("(min-width: 900px)").matches) {
 }
 
 /* ---------- Flip cards ---------- */
-$$(".flip").forEach(f => f.addEventListener("click", () => {
-  const on = f.classList.toggle("flipped"); f.setAttribute("aria-pressed", on);
-  if (on) f.dispatchEvent(new Event("flipped"));
-}));
+$$(".flip").forEach(f => {
+  const toggle = () => { const on = f.classList.toggle("flipped"); f.setAttribute("aria-pressed", on); if (on) f.dispatchEvent(new Event("flipped")); };
+  f.addEventListener("click", e => { if (!e.target.closest(".key")) toggle(); });
+  f.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === f) { e.preventDefault(); toggle(); } });
+});
 
 /* ---------- Timeline draws itself ---------- */
 $$(".timeline").forEach(t => {
@@ -237,7 +238,7 @@ function openRooms() {
   const rb = rooms.querySelector("[data-act=reset]");
   rb?.addEventListener("click", () => {
     if (rb.dataset.sure) { rooms.close(); resetKeys(); return; }
-    rb.dataset.sure = "1"; rb.textContent = "Sure? Click again to reset"; // two clicks, so nobody loses progress by accident
+    rb.dataset.sure = "1"; rb.classList.add("danger"); rb.textContent = "Sure? Click again to reset"; // two clicks, so nobody loses progress by accident
   });
   rooms.showModal();
 }
@@ -385,6 +386,7 @@ const CHIBI = `<svg viewBox="0 0 64 84" aria-hidden="true"><g class="bodyg">
   <ellipse cx="21" cy="32" rx="2.6" ry="1.5" fill="#EFA59A" opacity=".55"/><ellipse cx="43" cy="32" rx="2.6" ry="1.5" fill="#EFA59A" opacity=".55"/>
   <path d="M29 33q3 2.6 6 0" fill="none" stroke="#141319" stroke-width="1.5" stroke-linecap="round"/>
   <g class="p-camera"><rect x="20" y="19" width="24" height="15" rx="3" fill="#1C1D26"/><rect x="23" y="16" width="7" height="4" rx="1" fill="#1C1D26"/><circle cx="32" cy="26.5" r="5" fill="#3A4466" stroke="#E8B651" stroke-width="1.4"/><path class="flash" d="M40 10l2-5 2 5 5 2-5 2-2 5-2-5-5-2z" fill="#fff"/></g>
+  <g class="p-book"><path d="M14 52l18 3v14l-18-3z" fill="#F7F3EA" stroke="#8A6D2B" stroke-width="1"/><path d="M50 52l-18 3v14l18-3z" fill="#F7F3EA" stroke="#8A6D2B" stroke-width="1"/><path class="page" d="M32 55l14-2.3v12.5L32 67.5z" fill="#ECE4D2"/><path d="M18 57l10 1.6M18 60.5l10 1.6M36 58.6l10-1.6M36 62l10-1.6" stroke="#A4AABD" stroke-width=".8"/></g>
   <g class="p-laptop"><rect x="14" y="49" width="36" height="20" rx="2.5" fill="#2A3354" stroke="#3A4466" stroke-width="1"/><circle class="scr" cx="32" cy="59" r="2.6" fill="#E8B651"/><path d="M11 68h42l3 5H8z" fill="#9AA3BF"/></g>
 </g></svg>`;
 const chibi = document.createElement("button");
@@ -394,7 +396,7 @@ document.body.append(chibi, bubble);
 
 let cx = -90, running = false, paused = false, act = document.body.dataset.chibi || "wave", bubbleT;
 const setX = x => { cx = x; chibi.style.setProperty("--cx", x + "px"); };
-const ACTS = ["wave", "laptop", "camera", "racket"];
+const ACTS = ["wave", "laptop", "camera", "racket", "read"];
 function showAct() { ACTS.forEach(a => chibi.classList.toggle("act-" + a, !running && a === act)); }
 
 // which section is on screen decides what he does

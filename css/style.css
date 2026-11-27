@@ -599,3 +599,34 @@ dialog[open] { animation: pop .3s var(--ease-out); }
   86% { transform: translate(92px,120px) rotate(350deg); } 100% { transform: translate(70px,100px) rotate(360deg); } }
 @keyframes hb-swish { 0%, 44% { transform: none; } 50% { transform: scaleY(1.25) scaleX(.9); } 60%, 100% { transform: none; } }
 
+
+/* danger state: reset keys asks once, in red */
+.btn.danger { background: #E5484D; border-color: #E5484D; color: #fff; }
+.btn.danger:hover { background: #F2555A; border-color: #F2555A; color: #fff; box-shadow: 0 8px 30px -6px rgba(229,72,77,.5); }
+
+/* About */
+.about-head { margin-bottom: 1rem; }
+.about-head h1 { font-size: clamp(3rem, 8vw, 5.5rem); }
+.about-head .polaroid { width: 100%; }
+.photo-row { margin: 2rem 0 .75rem; }
+.photo-row .flip { --r: -2.5deg; }
+.photo-row .flip .polaroid { transform: none; }
+.photo-row .flip .flip-inner { transform: rotate(var(--r)); }
+.photo-row .flip.flipped .flip-inner { transform: rotate(var(--r)) rotateY(180deg); }
+.flip { cursor: pointer; border-radius: 6px; }
+.flip-back { pointer-events: none; }
+.flip.flipped .flip-back { pointer-events: auto; }
+.flip-back span:first-child { font: 500 12px/1 var(--mono); font-style: normal; letter-spacing: .06em; text-transform: uppercase; color: #6B5420; }
+.flip-back .key { color: #8A6D2B; background: radial-gradient(circle, rgba(232,182,81,.35), transparent 70%); margin: .5rem auto 0; }
+.side-photo { float: right; width: min(220px, 42%); margin: .25rem 0 1rem 1.5rem; --r: 3deg; }
+section::after { content: ""; display: table; clear: both; }
+@media (max-width: 520px) { .side-photo { float: none; margin: 1rem auto; width: 70%; } }
+.timeline a { color: var(--gold-soft); }
+
+/* chibi reading a book (timeline) */
+.chibi .p-book { display: none; }
+.chibi.act-read .p-book { display: inline; }
+.chibi.act-read .arm-l { transform: rotate(-35deg); }
+.chibi.act-read .arm-r { transform: rotate(35deg); }
+.chibi.act-read .page { animation: c-page 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: left center; }
+@keyframes c-page { 0%, 60% { transform: scaleX(1); } 80% { transform: scaleX(-1); } 100% { transform: scaleX(-1); opacity: 0; } }

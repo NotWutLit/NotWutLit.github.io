@@ -7,12 +7,12 @@
   <meta name="description" content="About Thong Thai: from Đà Nẵng to computer science at UGA.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/site.js" defer></script>
 </head>
-<body>
+<body data-page="about" data-chibi="wave">
   <a class="skip-link" href="#main-content">Skip to content</a>
   <header>
     <div class="wide">
@@ -30,20 +30,77 @@
 
   <main id="main-content" tabindex="-1">
     <div class="wrap">
-      <h1>About Me</h1>
+      <section class="about-head" data-chibi="wave" aria-labelledby="about-title">
+        <div>
+          <h1 id="about-title">About <em>me</em></h1>
+          <p class="lead">From a three-generation home in Đà Nẵng to computer science at the University of Georgia.</p>
+        </div>
+        <figure class="polaroid">
+          <img src="assets/img/life/me-atlanta.jpg" width="800" height="1000" alt="Thong leaning against a red brick wall under a street lamp decorated for the holidays.">
+          <figcaption>me, recently</figcaption>
+        </figure>
+      </section>
 
-      <h2>Growing up in Đà Nẵng</h2>
-      <p>I grew up in Đà Nẵng, Vietnam, in a home shared by three generations. My grandparents, my parents, my younger sibling and I were part of one another’s everyday lives. When I think about home, I think about having those people close by, and about the work that made that possible.</p>
+      <section data-chibi="camera" aria-labelledby="growing-up">
+        <h2 id="growing-up">Growing up in Đà Nẵng</h2>
+        <p>I grew up in Đà Nẵng, Vietnam, in a home shared by three generations. My grandparents, my parents, my younger sibling and I were part of one another’s everyday lives. When I think about home, I think about having those people close by, and about the work that made that possible.</p>
+        <div class="photo-row">
+          <div class="flip" role="button" tabindex="0" aria-pressed="false" aria-label="Childhood photo. Select to flip it over.">
+            <div class="flip-inner">
+              <figure class="flip-face polaroid">
+                <img src="assets/img/life/child-me.jpg" width="800" height="1000" alt="Young Thong in a cap, hand on chin, posing under palm trees.">
+                <figcaption>young me, already posing</figcaption>
+              </figure>
+              <div class="flip-face flip-back">
+                <span>Written on the back:</span>
+                <span>“Đà Nẵng. Home.”</span>
+                <button class="key key-inline" type="button" data-key="about" hidden></button>
+              </div>
+            </div>
+          </div>
+          <figure class="polaroid">
+            <img src="assets/img/life/danang-sunset.jpg" width="1200" height="900" alt="Đà Nẵng’s skyline at sunset over the river, photographed by Thong." loading="lazy">
+            <figcaption>home at sunset, shot by me</figcaption>
+          </figure>
+        </div>
+        <p class="hint">Psst: photos sometimes have something written on the back.</p>
+      </section>
 
-      <h2>How I found computer science</h2>
-      <p>I’m drawn to computer science because I want to understand how things work well enough to build them myself. That interest has taken shape through projects like <a href="projects.html">Remember Me</a>, a diary app for people living with Alzheimer’s, and <a href="golden-peace.html">Golden Peace</a>, a wellness app for older adults in Vietnam. Working on them has given me a question to come back to: can the person I’m building for actually use what I’ve made?</p>
+      <section data-chibi="laptop" aria-labelledby="found-cs">
+        <h2 id="found-cs">How I found computer science</h2>
+        <figure class="polaroid side-photo">
+          <img src="assets/img/life/robotics.jpg" width="800" height="1002" alt="Young Thong in an orange shirt at a robotics competition in Đà Nẵng in 2017; other children’s faces are blurred." loading="lazy">
+          <figcaption>robotics competition, 2017</figcaption>
+        </figure>
+        <p>I’m drawn to computer science because I want to understand how things work well enough to build them myself. That interest has taken shape through projects like <a href="projects.html">Remember Me</a>, a diary app for people living with Alzheimer’s, and <a href="golden-peace.html">Golden Peace</a>, a wellness app for older adults in Vietnam. Working on them has given me a question to come back to: can the person I’m building for actually use what I’ve made?</p>
+      </section>
 
-      <h2>Being there for others</h2>
-      <p>When I interviewed my grandmother and my father about their lives, I expected to hear mostly about hardship. My grandmother had worked in the rice fields from the age of twelve. My father had changed his university major to pursue a field he believed had a future. But when I asked what mattered most, their answers were about family. My grandmother wanted peace in the family. My father said wealth and status meant little compared with watching his children grow up.</p>
-      <p>Those conversations changed how I understood their hard work. We work hard so that, in the end, we get to be there for one another. I want to carry that idea into what I build: pay attention to the people who will use it, take their difficulties seriously, and keep working until it is easier for them.</p>
+      <section data-chibi="wave" aria-labelledby="being-there">
+        <h2 id="being-there">Being there for others</h2>
+        <p>When I interviewed my grandmother and my father about their lives, I expected to hear mostly about hardship. My grandmother had worked in the rice fields from the age of twelve. My father had changed his university major to pursue a field he believed had a future. But when I asked what mattered most, their answers were about family. My grandmother wanted peace in the family. My father said wealth and status meant little compared with watching his children grow up.</p>
+        <p>Those conversations changed how I understood their hard work. We work hard so that, in the end, we get to be there for one another. I want to carry that idea into what I build: pay attention to the people who will use it, take their difficulties seriously, and keep working until it is easier for them.</p>
+      </section>
 
-      <h2>Now at UGA</h2>
-      <p>I study computer science at the University of Georgia. I’m interested in artificial intelligence and in the foundations that make software work. I want to develop the technical depth to build useful tools from the ground up, while keeping the people using them in view. You can see that work in my <a href="projects.html">projects</a> or <a href="mailto:thong11042008@gmail.com">get in touch</a>.</p>
+      <section data-chibi="read" aria-labelledby="life-so-far">
+        <h2 id="life-so-far">Life so <em>far</em></h2>
+        <ol class="timeline">
+          <li><time>Childhood</time><b>Đà Nẵng, Vietnam.</b> A home shared by three generations.</li>
+          <li><time>2017</time><b>First robotics competition</b>, in Đà Nẵng.</li>
+          <li><time>2024</time><b>Semi-finalist</b> at the 7th U-Invent Competition (national), and a prize at the city Youth Informatics Contest.</li>
+          <li><time>Oct 2024 – Feb 2025</time><b>Student researcher at Duy Tan University</b>, the only high school student on an AI research team. Also built <a href="projects.html">Remember Me</a>.</li>
+          <li><time>Feb 2025</time><b>Co-founded EmoTech</b>, a digital wellness initiative.</li>
+          <li><time>May 2025</time><b>Started <a href="golden-peace.html">Golden Peace</a></b>, and a developer internship at DZFullStack Software Solutions.</li>
+          <li><time>2025</time><b>First Prize, National Round</b>, MOS World Championship.</li>
+          <li><time>June 2025</time><b>Vice President</b> of the AgeWell Tech Solutions Club.</li>
+          <li><time>2025 – 2026</time><b>English national-exam team.</b></li>
+          <li><time>2026</time><b>University of Georgia</b>, Classic City Scholar, studying computer science.</li>
+        </ol>
+      </section>
+
+      <section data-chibi="wave" aria-labelledby="now-uga">
+        <h2 id="now-uga">Now at UGA</h2>
+        <p>I study computer science at the University of Georgia. I’m interested in artificial intelligence and in the foundations that make software work. I want to develop the technical depth to build useful tools from the ground up, while keeping the people using them in view. You can see that work in my <a href="projects.html">projects</a> or <a href="mailto:thong11042008@gmail.com">get in touch</a>.</p>
+      </section>
     </div>
   </main>
 
@@ -53,7 +110,7 @@
         <li><a href="mailto:thong11042008@gmail.com">Email</a></li>
         <li><a href="https://github.com/NotWutLit">GitHub</a></li>
       </ul>
-      <p>Last updated November 2026</p>
+      <p>Built by hand. No frameworks.</p>
     </div>
   </footer>
 </body>
