@@ -93,6 +93,10 @@
               <label><input type="radio" name="to" value="Grandpa"><span>Grandpa</span></label>
               <label><input type="radio" name="to" value="Mom"><span>Mom</span></label>
               <label><input type="radio" name="to" value="Dad"><span>Dad</span></label>
+              <label><input type="radio" name="to" value="other"><span>Other</span></label>
+              <span class="other-name" hidden>
+                <input type="text" id="letter-to" maxlength="30" autocomplete="off" placeholder="their name" aria-label="Who is the letter for?">
+              </span>
             </fieldset>
             <label class="sr-only" for="letter-body">Your letter</label>
             <textarea id="letter-body" rows="5" maxlength="600" placeholder="I still remember…" aria-describedby="letter-count"></textarea>
@@ -111,7 +115,7 @@
               <g class="seal"><circle cx="120" cy="112" r="16" fill="#C9962F"/><circle cx="120" cy="112" r="12" fill="none" stroke="#F4D58D" stroke-width="1.4"/><text x="120" y="118" text-anchor="middle" font-family="Instrument Serif, Georgia, serif" font-size="17" fill="#F4D58D">T</text></g>
             </svg>
             <p class="env-msg" role="status"></p>
-            <button class="key key-inline" type="button" data-key="projects" hidden></button>
+            <button class="key key-inline key-big" type="button" data-key="projects" hidden></button>
             <button class="btn ghost" type="button" data-act="again">Write another</button>
           </div>
         </div>

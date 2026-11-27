@@ -224,15 +224,22 @@ const letterForm = $("#letter-form");
 if (letterForm) {
   const body = $("#letter-body"), send = $("button[type=submit]", letterForm), count = $(".count", letterForm);
   const env = $(".envelope"), msg = $(".env-msg", env), MIN = 15;
+  const otherWrap = $(".other-name", letterForm), otherInput = $("#letter-to");
+  const recipient = () => { const v = letterForm.querySelector("input[name=to]:checked").value; return v === "other" ? otherInput.value.trim() : v; };
   const check = () => {
-    const n = body.value.trim().length, ok = n >= MIN;
+    const n = body.value.trim().length, named = recipient().length > 0, ok = n >= MIN && named;
     send.disabled = !ok; count.classList.toggle("ok", ok);
-    count.textContent = ok ? "Ready to seal" : `Write at least ${MIN} characters (${n}/${MIN})`;
+    count.textContent = !named ? "Who is it for? Type a name" : ok ? "Ready to seal" : `Write at least ${MIN} characters (${n}/${MIN})`;
   };
-  body.addEventListener("input", check); check();
+  $$("input[name=to]", letterForm).forEach(r => r.addEventListener("change", () => {
+    const other = r.value === "other" && r.checked;
+    otherWrap.hidden = !other; if (other) otherInput.focus();
+    check();
+  }));
+  body.addEventListener("input", check); otherInput.addEventListener("input", check); check();
   letterForm.addEventListener("submit", e => {
     e.preventDefault(); if (send.disabled) return;
-    const who = letterForm.querySelector("input[name=to]:checked").value;
+    const who = recipient();
     letterForm.classList.add("sealing");
     setTimeout(() => {
       letterForm.hidden = true; letterForm.classList.remove("sealing");
@@ -240,13 +247,13 @@ if (letterForm) {
       msg.textContent = `Sealed and addressed to ${who}.`;
       setTimeout(() => {
         const k = keyFor("projects");
-        if (k) { k.removeAttribute("hidden"); msg.textContent = "Something fell out of the envelope…"; }
+        if (k) { k.removeAttribute("hidden"); msg.textContent = "A key fell out of the envelope. Click the key to take it."; k.focus({ preventScroll: true }); }
         else msg.textContent = `Sealed and addressed to ${who}. You already have this room’s key.`;
       }, reduce ? 0 : 1400);
     }, reduce ? 0 : 900);
   });
   $("[data-act=again]", env).addEventListener("click", () => {
-    env.hidden = true; letterForm.hidden = false; body.value = ""; check(); body.focus();
+    env.hidden = true; letterForm.hidden = false; body.value = ""; otherInput.value = ""; check(); body.focus();
   });
 }
 

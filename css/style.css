@@ -674,7 +674,7 @@ section::after { content: ""; display: table; clear: both; }
 .letter .to { border: 0; margin: 0 0 .75rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; }
 .letter .dear { font: italic 2rem/1 var(--serif); margin-right: .25rem; }
 .letter .to label { position: relative; }
-.letter .to input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.letter .to input[type=radio] { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
 .letter .to label span { display: inline-flex; align-items: center; min-height: 40px; padding: 0 .9rem; border-radius: 999px; border: 1px solid #D8CCB0; font: 500 15px var(--sans); color: #5E5A52; transition: background .15s, color .15s, border-color .15s; }
 .letter .to input:checked + span { background: #8A6D2B; border-color: #8A6D2B; color: #fff; }
 .letter .to input:focus-visible + span { outline: 2px solid #8A6D2B; outline-offset: 2px; }
@@ -701,3 +701,15 @@ section::after { content: ""; display: table; clear: both; }
 @keyframes seal-stamp { 0% { opacity: 0; transform: scale(1.8); } 100% { opacity: 1; transform: scale(1); } }
 .env-msg { margin: 0; font: italic 1.3rem var(--serif); color: var(--gold-soft); min-height: 1.6em; }
 @media (prefers-reduced-motion: reduce) { .env .flap { transform: none; } .env .seal { opacity: 1; } }
+
+/* letter: "Other" name field, written on the paper */
+.letter .other-name[hidden] { display: none; }
+.letter .other-name input { font: italic 1.4rem var(--serif); color: #2B2B2B; background: transparent; border: 0; border-bottom: 2px dashed #B9A77C;
+  width: 11ch; padding: .1rem .2rem; outline: 0; }
+.letter .other-name input::placeholder { color: #6F685B; }
+.letter .other-name input:focus-visible { border-bottom-color: #74591F; }
+/* the key that falls out of the envelope: big, obvious, must be clicked */
+.key.key-big { width: 84px; height: 84px; margin: .25rem auto; background: radial-gradient(circle, rgba(232,182,81,.4), transparent 68%); }
+.key.key-big svg { width: 52px; height: 52px; }
+.key.key-big:not([hidden]) { animation: key-drop .7s var(--ease-out), glint 2.6s ease-in-out .7s infinite; }
+@keyframes key-drop { from { transform: translateY(-60px) rotate(-40deg); opacity: 0; } }
