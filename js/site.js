@@ -561,7 +561,7 @@ const CMDS = {
 <b>about me</b>      ${c("whoami")}  ${c("about")}  ${c("skills")}  ${c("projects")}  ${c("contact")}
 <b>go somewhere</b>  ${c("open ", "open <page>", 1)}  ${c("ls")}
 <b>terminal</b>      ${c("clear")}  ${c("exit")}
-<span class="dim">tip: click any gold word. Tab or → completes, ↑ ↓ brings back what you typed.</span>`),
+<span class="dim">${tapOnly ? "tip: tap any gold word." : "tip: click any gold word. Tab or → completes, ↑ ↓ brings back what you typed."}</span>`),
   whoami: () => print("Thong Thai. CS student at the University of Georgia, from Đà Nẵng, Vietnam. I build apps for the people around me."),
   about: () => print("Grew up in a three-generation home in Đà Nẵng. My grandmother wanted peace in the family; my father wanted to watch his children grow up. I build so I can be there for others."),
   projects: () => print(`golden-peace   wellness app for older adults in Vietnam (React Native, Expo, Supabase)\nremember-me    diary app for people living with Alzheimer’s (Flutter, Firebase)\n<span class="dim">try:</span> ${c("open golden-peace")}  ${c("open remember-me")}`),
@@ -630,19 +630,26 @@ tin.addEventListener("keydown", e => {
   } else if (e.key === "ArrowUp" && hist.length) { e.preventDefault(); hpos = Math.max(0, hpos - 1); tin.value = hist[hpos]; }
   else if (e.key === "ArrowDown" && hist.length) { e.preventDefault(); hpos = Math.min(hist.length, hpos + 1); tin.value = hist[hpos] || ""; }
 });
+// touch devices get a buttons-only terminal: no keyboard popping up, every command is a tap
+const tapOnly = matchMedia("(pointer: coarse)").matches;
+if (tapOnly) term.classList.add("tap-only");
 term.addEventListener("click", e => {
   const b = e.target.closest("[data-cmd], [data-fill]");
-  if (b) { if (b.dataset.cmd) run(b.dataset.cmd); else tin.value = b.dataset.fill; tin.focus(); }
+  if (b && tapOnly && b.dataset.fill) { // no typing on phones: offer the choices as buttons instead
+    return b.dataset.fill.startsWith("hint") ? print(`hint for which room? ${Object.values(ROOM_ARG).map(r => c("hint " + r, r)).join("  ")}`, "dim") : run("open");
+  }
+  if (b) { if (b.dataset.cmd) run(b.dataset.cmd); else tin.value = b.dataset.fill; if (!tapOnly) tin.focus(); }
   else if (e.target.closest(".term-x")) term.close();
-  else if (e.target.closest(".term-out") && !e.target.closest("a") && !getSelection().toString()) tin.focus(); // click the output to type
+  else if (!tapOnly && e.target.closest(".term-out") && !e.target.closest("a") && !getSelection().toString()) tin.focus(); // click the output to type
 });
 function renderChips() {
-  $(".term-chips", term).innerHTML = [found.size === 5 ? "unlock" : "keys", "hint", "help", "whoami", "projects", "contact", "clear"].map(x => c(x)).join("");
+  const ks = found.size === 5 ? "unlock" : "keys";
+  $(".term-chips", term).innerHTML = (tapOnly ? [ks, "hint", "help", "whoami", "about", "skills", "projects", "contact", "open", "reset", "clear", "exit"] : [ks, "hint", "help", "whoami", "projects", "contact", "clear"]).map(x => c(x)).join("");
 }
 function openTerminal(first) {
   renderChips();
-  if (!tout.childElementCount) print(`Welcome to thong@danang. New here? Tap a command below, or type ${c("help")}.`, "dim");
-  term.showModal(); tin.focus();
+  if (!tout.childElementCount) print(tapOnly ? `Welcome to thong@danang. Tap a command below.` : `Welcome to thong@danang. New here? Tap a command below, or type ${c("help")}.`, "dim");
+  term.showModal(); if (!tapOnly) tin.focus();
   if (first) run(first);
 }
 

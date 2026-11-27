@@ -1015,7 +1015,7 @@ h2.in em::after { transform: scaleX(1) rotate(-2deg); }
 .resume-stats { list-style: none; padding: 0 0 .6rem; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
 .resume-stats li { min-width: 0; padding: 1rem .8rem; border: 1px solid var(--border); border-radius: 14px; background: linear-gradient(135deg, rgba(232,182,81,.08), var(--surface)); }
 .resume-stats strong { display: block; color: var(--gold-soft); font: 2rem/1.1 var(--serif); margin-bottom: .5rem; white-space: nowrap; }
-.resume-stats span:not(.sr-only) { font: 11px/1.5 var(--mono); color: var(--muted); display: block; }
+.resume-stats span:not(.sr-only) { font: 12px/1.5 var(--mono); color: var(--muted); display: block; }
 .resume-stats strong span:not(.sr-only) { font: inherit; color: inherit; }
 .resume-stats li:last-child { grid-column: span 2; }
 .resume-item::before { background: var(--gold); opacity: .65; transition: none; }
@@ -1079,4 +1079,15 @@ html.motion-paused .skill-groups .tags li { opacity: 1; transform: none; }
   .contact { margin-bottom: 0; }
   h2 { break-after: avoid; }
   h2 em::after { display: none; }
+}
+
+/* ---------- Phones: buttons-only terminal, photo board as a grid ---------- */
+.terminal.tap-only .term-in { display: none; }
+.terminal.tap-only .term-chips { flex-wrap: wrap; overflow: visible; padding-bottom: .9rem; }
+@media (max-width: 899px) {
+  /* the sideways row hid most photos (drag blocked swiping), so show them all */
+  .board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem .9rem; overflow: visible; padding: 1.1rem; scroll-snap-type: none; }
+  .board .polaroid { width: auto !important; flex: none; touch-action: auto; cursor: default; transform: rotate(calc(var(--r, 0deg) * .5)); padding: 7px 7px 0; }
+  .board .polaroid figcaption { font-size: 15px; padding: .4rem .25rem .55rem; }
+  .board .key { grid-column: 1 / -1; justify-self: center; }
 }
