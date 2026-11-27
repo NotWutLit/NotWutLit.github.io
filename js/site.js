@@ -296,13 +296,6 @@ $$(".flip").forEach(f => {
   f.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === f) { e.preventDefault(); toggle(); } });
 });
 
-/* ---------- Timeline draws itself ---------- */
-$$(".timeline").forEach(t => {
-  if (reduce) return;
-  const upd = () => { if (!motionOK() || document.hidden) return; const r = t.getBoundingClientRect(); const p = Math.min(Math.max((innerHeight * .8 - r.top) / r.height, 0), 1); t.style.setProperty("--drawn", p.toFixed(3)); };
-  addEventListener("scroll", upd, { passive: true }); upd();
-});
-
 /* ---------- Toast ---------- */
 const toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.append(toastEl);
 let toastT;
@@ -1008,4 +1001,122 @@ addEventListener("beforeprint", () => $$('[data-count]').forEach(el => countJobs
   const observer = new IntersectionObserver(entries => entries.forEach(e => e.target.classList.toggle("motion-offscreen", !e.isIntersecting)));
   $$(".illo, .hobby, .ticker, .clocks, .reflection, .phone3d, .scroll-cue, .chibi, .key, .env").forEach(el => observer.observe(el));
   $$(".skill-groups .tags li").forEach(el => el.style.setProperty("--chip-delay", `${[...el.parentElement.children].indexOf(el) * 55}ms`));
+})();
+
+/* ---------- Motion: about scenes ---------- */
+function aboutScene(el, build, image) {
+  let visible = false, started = false, settled = false, animations = [];
+  // One-shot effects keep their place offscreen, but disabled motion shows the finished scene.
+  const finish = () => {
+    if (settled) return;
+    settled = true; el.classList.remove("scene-pending"); el.classList.add("scene-settled");
+    animations.forEach(a => a.cancel());
+  };
+  const sync = () => {
+    if (!motionOK()) return finish();
+    if (!started && !settled && visible && !document.hidden && (!image || image.complete)) {
+      started = true; animations = build(innerWidth < 600 || !finePointer);
+      Promise.all(animations.map(a => a.finished)).then(finish, () => {});
+    }
+    animations.forEach(a => { if (!settled) { if (visible && !document.hidden) a.play(); else a.pause(); } });
+  };
+  el.classList.toggle("scene-pending", motionOK());
+  const observer = new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting; el.classList.toggle("motion-offscreen", !visible); sync();
+  }, { threshold: .12 });
+  observer.observe(el); image?.addEventListener("load", sync, { once: true });
+  addEventListener("motionchange", sync); addEventListener("beforeprint", finish); sync();
+}
+
+/* ---------- Motion: about route ---------- */
+(() => {
+  const scene = $(".about-route"); if (!scene) return;
+  const arc = $(".route-arc", scene), plane = $(".route-plane", scene), length = arc.getTotalLength();
+  aboutScene(scene, light => {
+    const duration = light ? 1300 : 2400, frames = Array.from({ length: 65 }, (_, i) => {
+      const d = length * i / 64, p = arc.getPointAtLength(d), q = arc.getPointAtLength(Math.min(length, d + 1));
+      const prev = arc.getPointAtLength(Math.max(0, d - 1));
+      return { transform: `translate(${p.x}px,${p.y}px) rotate(${Math.atan2(q.y - prev.y, q.x - prev.x) * 180 / Math.PI}deg)`, opacity: i === 64 ? 0 : 1 };
+    });
+    // A scaled SVG mask draws the arc using only transforms, alongside the travelling plane.
+    return [$(".route-mask", scene).animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration, easing: "linear", fill: "both" }),
+      plane.animate(frames, { duration, easing: "linear", fill: "both" })];
+  });
+})();
+
+/* ---------- Motion: about film ---------- */
+(() => {
+  if (page !== "about") return;
+  $$(".polaroid").forEach(photo => {
+    const image = $("img", photo), frame = document.createElement("span"), wash = document.createElement("span");
+    frame.className = "film-image"; wash.className = "film-wash"; wash.setAttribute("aria-hidden", "true");
+    image.before(frame); frame.append(image, wash);
+    if (/\/(danang-sunset|uga-arch)\.jpg$/.test(image.getAttribute("src"))) frame.classList.add("photo-drift");
+    aboutScene(frame, light => {
+      const duration = light ? 1000 : 1600, options = { duration, easing: "ease-out", fill: "both" };
+      return [image.animate([{ filter: light ? "contrast(.55) saturate(.3)" : "contrast(.3) saturate(.15) blur(3px)" }, { filter: "none" }], options),
+        wash.animate([{ opacity: .92 }, { opacity: 0 }], options)];
+    }, image);
+  });
+})();
+
+/* ---------- Motion: about timeline ---------- */
+(() => {
+  const timeline = $("body[data-page='about'] .timeline"); if (!timeline) return;
+  const items = $$("li", timeline), visible = new Set(); let raf = 0, onScreen = false;
+  const update = () => {
+    raf = 0; if (document.hidden) return;
+    const r = timeline.getBoundingClientRect(), lineStart = 10.8, height = Math.max(1, r.height - lineStart * 2);
+    const drawn = motionOK() ? Math.max(0, Math.min(height, innerHeight * .72 - r.top - lineStart)) : height;
+    timeline.style.setProperty("--drawn", (drawn / height).toFixed(4));
+    items.forEach(item => {
+      const reached = !motionOK() || item.offsetTop + 9 <= drawn + lineStart;
+      if (reached && !item.classList.contains("timeline-reached") && visible.has(item) && motionOK()) {
+        const tick = $("time", item).animate([{ transform: "translateX(-3px)", opacity: .5 }, { transform: "translateX(0)", opacity: 1 }], { duration: 350, easing: "ease-out" });
+        item._yearTick = tick;
+      }
+      item.classList.toggle("timeline-reached", reached);
+    });
+  };
+  const request = () => { if (!raf && (!motionOK() || onScreen) && !document.hidden) raf = requestAnimationFrame(update); };
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.target === timeline) onScreen = e.isIntersecting;
+      else if (e.isIntersecting) { visible.add(e.target); if (motionOK() && !document.hidden && e.target._yearTick?.playState === "paused") e.target._yearTick.play(); }
+      else { visible.delete(e.target); itemPause(e.target); }
+    }); request();
+  });
+  const itemPause = item => { if (item._yearTick?.playState === "running") item._yearTick.pause(); };
+  observer.observe(timeline); items.forEach(item => observer.observe(item));
+  addEventListener("scroll", request, { passive: true }); addEventListener("resize", request);
+  addEventListener("motionchange", () => { items.forEach(item => { if (!motionOK()) item._yearTick?.cancel(); else if (visible.has(item) && !document.hidden && item._yearTick?.playState === "paused") item._yearTick.play(); }); request(); });
+  update();
+})();
+
+/* ---------- Motion: about generations ---------- */
+(() => {
+  const scene = $(".family-scene"); if (!scene) return;
+  aboutScene(scene, light => $$(".family-window", scene).map((window, i) =>
+    window.animate([{ opacity: .16 }, { opacity: 1 }], { duration: light ? 300 : 550, delay: i * (light ? 220 : 450), fill: "both", easing: "ease-out" })));
+})();
+
+/* ---------- Motion: about photo parallax ---------- */
+(() => {
+  const frames = $$(".photo-drift"); if (!frames.length) return;
+  const visible = new Set(); let raf = 0;
+  const update = () => {
+    raf = 0; if (document.hidden) return;
+    frames.forEach(frame => {
+      if (!motionOK()) frame.style.setProperty("--photo-y", "0px");
+      else if (visible.has(frame)) {
+        const r = frame.getBoundingClientRect(), light = innerWidth < 600 || !finePointer;
+        const y = Math.max(-1, Math.min(1, (innerHeight / 2 - r.top - r.height / 2) / innerHeight)) * (light ? 3 : 9);
+        frame.style.setProperty("--photo-y", `${y.toFixed(2)}px`);
+      }
+    });
+  };
+  const request = () => { if (!raf && !document.hidden && (visible.size || !motionOK())) raf = requestAnimationFrame(update); };
+  const observer = new IntersectionObserver(entries => { entries.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)); request(); });
+  frames.forEach(frame => observer.observe(frame));
+  addEventListener("scroll", request, { passive: true }); addEventListener("resize", request); addEventListener("motionchange", request); update();
 })();

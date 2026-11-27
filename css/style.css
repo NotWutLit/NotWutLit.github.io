@@ -1091,3 +1091,81 @@ html.motion-paused .skill-groups .tags li { opacity: 1; transform: none; }
   .board .polaroid figcaption { font-size: 15px; padding: .4rem .25rem .55rem; }
   .board .key { grid-column: 1 / -1; justify-self: center; }
 }
+
+/* ---------- Motion: about scenes ---------- */
+body[data-page="about"] .about-head > div { min-width: 0; }
+
+/* ---------- Motion: about route ---------- */
+.about-route { display: block; width: 100%; max-width: 540px; height: auto; margin: .3rem 0 -.7rem; overflow: visible; pointer-events: none; }
+.route-world { opacity: .28; }
+.route-guide, .route-arc { fill: none; stroke-width: 1.5; }
+.route-guide { stroke: var(--gold); stroke-dasharray: 3 7; opacity: .22; }
+.route-arc { stroke: var(--gold); stroke-linecap: round; }
+.route-mask { transform-origin: 540px 0; }
+.route-point, .route-plane { fill: var(--gold-soft); }
+.route-halo { fill: var(--gold); opacity: .14; transform-box: fill-box; transform-origin: center; }
+.route-labels { font: 13px var(--mono); fill: var(--gold-soft); }
+.route-plane { opacity: 0; }
+.about-route.scene-pending .route-mask { transform: scaleX(0); }
+.about-route.scene-settled .route-halo { animation: route-pulse 5s ease-in-out var(--point-delay) infinite; }
+@keyframes route-pulse { 0%, 100% { transform: scale(.8); opacity: .12; } 50% { transform: scale(1.4); opacity: .28; } }
+@media (max-width: 599px), (pointer: coarse) {
+  .about-route { max-width: 360px; margin: -.5rem auto -1rem; }
+  .about-route .route-labels { font-size: 16px; }
+  .about-route .route-halo { animation: none !important; }
+}
+
+/* ---------- Motion: about film ---------- */
+.film-image { display: block; position: relative; overflow: hidden; border-radius: 2px; }
+.film-wash { position: absolute; inset: 0; background: #F3EAD6; opacity: 0; pointer-events: none; }
+.film-image.scene-pending img { filter: contrast(.3) saturate(.15) blur(3px); }
+.film-image.scene-pending .film-wash { opacity: .92; }
+@media (max-width: 599px), (pointer: coarse) { .film-image.scene-pending img { filter: contrast(.55) saturate(.3); } }
+
+/* ---------- Motion: about timeline ---------- */
+body[data-page="about"] .timeline { --drawn: 1; }
+body[data-page="about"] .timeline::after { content: ""; position: absolute; left: 4px; top: .6rem; bottom: .6rem; width: 2px; background: var(--border-strong); z-index: -1; }
+body[data-page="about"] .timeline li { --reveal-start: translateX(-18px); }
+body[data-page="about"] .timeline li::after { content: ""; position: absolute; left: -1.75rem; top: .5rem; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 14px var(--gold-glow); opacity: 0; }
+body[data-page="about"] .timeline time { position: relative; width: fit-content; padding-right: 1.2rem; }
+body[data-page="about"] .timeline time::before { content: ""; position: absolute; inset: 3px 1.2rem 3px 0; border-radius: 50%; background: var(--gold); filter: blur(12px); opacity: 0; }
+body[data-page="about"] .timeline time::after { content: ""; position: absolute; right: 0; top: .4rem; width: 7px; height: 4px; border-left: 1px solid var(--gold-soft); border-bottom: 1px solid var(--gold-soft); transform: rotate(-45deg); opacity: 0; }
+body[data-page="about"] .timeline .timeline-reached::after,
+body[data-page="about"] .timeline .timeline-reached time::after { opacity: 1; }
+body[data-page="about"] .timeline .timeline-reached time::before { opacity: .17; }
+@media (max-width: 599px), (pointer: coarse) { body[data-page="about"] .timeline li { --reveal-start: translateX(-7px); } }
+
+/* ---------- Motion: about generations ---------- */
+.family-scene { animation: none; }
+.family-moon-glow { opacity: .16; filter: blur(9px); }
+.family-scene.scene-pending .family-window { opacity: .16; }
+.family-scene.scene-settled .family-window { animation: family-flicker 9s ease-in-out var(--window-delay) infinite; }
+.family-scene.scene-settled .family-moon-glow { animation: family-moon 7s ease-in-out infinite; }
+@keyframes family-flicker { 0%, 68%, 74%, 100% { opacity: 1; } 70% { opacity: .83; } 72% { opacity: .95; } }
+@keyframes family-moon { 0%, 100% { opacity: .12; } 50% { opacity: .22; } }
+@media (max-width: 599px), (pointer: coarse) { .family-scene .family-window, .family-scene .family-moon-glow { animation: none !important; } }
+
+/* ---------- Motion: about photo parallax ---------- */
+.photo-drift img { transform: translateY(var(--photo-y, 0px)) scale(1.06); }
+/* Static fallbacks also expose undeveloped photos if preferences change during an entrance. */
+html.motion-paused .about-route .route-mask { transform: none; }
+html.motion-paused .film-image img { filter: none; }
+html.motion-paused .film-wash { opacity: 0; }
+html.motion-paused .photo-drift img { transform: none; }
+html.motion-paused .family-scene .family-window { opacity: 1; }
+html.motion-paused body[data-page="about"] .timeline::before { transform: scaleY(1); }
+@media (prefers-reduced-motion: reduce) {
+  .about-route .route-mask { transform: none !important; }
+  .about-route .route-halo, .family-scene .family-window, .family-scene .family-moon-glow { animation: none !important; }
+  .film-image img { filter: none !important; }
+  .film-wash { opacity: 0 !important; }
+  .photo-drift img { transform: none; }
+  .family-scene .family-window { opacity: 1 !important; }
+  body[data-page="about"] .timeline::before { transform: scaleY(1); }
+}
+@media print {
+  .about-route { display: none; }
+  .film-image img { filter: none !important; transform: none !important; }
+  .film-wash { display: none; }
+  body[data-page="about"] .timeline::before { transform: none; }
+}

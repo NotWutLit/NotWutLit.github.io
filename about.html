@@ -35,6 +35,22 @@
         <div>
           <h1 class="title-3d" id="about-title">About <em>me</em></h1>
           <p class="lead">From a three-generation home in Đà Nẵng to computer science at the University of Georgia.</p>
+          <svg class="about-route" viewBox="0 0 540 210" aria-hidden="true" focusable="false">
+            <defs>
+              <pattern id="route-dots" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.3" fill="#6FA8FF"/></pattern>
+              <mask id="route-draw" maskUnits="userSpaceOnUse" x="0" y="0" width="540" height="210"><rect class="route-mask" width="540" height="210" fill="white"/></mask>
+            </defs>
+            <g class="route-world" fill="url(#route-dots)">
+              <path d="m36 59 24-20 42-8 32 8 31-4 20 22-14 17-25 4-8 21-22 5-9 19-16-9-5-22-26-6-10-15Zm83 65 28 3 16 22-7 24-18 19-13-17 1-20-12-15ZM189 31l19-9 16 5-5 20-19 3Z"/>
+              <path d="m245 57 24-18 28 7 19-13 49 2 24-8 44 13 27 2 35 28-13 14-35-3-7 19-28-4-13 17-19-9-7-21-19 3-6 29-15-5-9-28-25-4-16 8-17-6-16 9-17-9Zm35 34 26 6 22 27-10 30-17 13-12-25-16-14-7-21Zm92 28 17 7 9 19 20 6-4 9-22-11-14-14Zm51 39 28-10 32 13 10 18-20 8-35-8-17-9Z"/>
+            </g>
+            <path class="route-guide" d="M414 112Q280-29 104 91"/>
+            <g mask="url(#route-draw)"><path class="route-arc" d="M414 112Q280-29 104 91"/></g>
+            <g class="route-point" style="--point-delay: 0s"><circle class="route-halo" cx="414" cy="112" r="10"/><circle cx="414" cy="112" r="3.5"/></g>
+            <g class="route-point" style="--point-delay: 1.3s"><circle class="route-halo" cx="104" cy="91" r="10"/><circle cx="104" cy="91" r="3.5"/></g>
+            <g class="route-plane" transform="translate(104 91)"><path d="m-10 0 7-2-1-8 3-1 5 8 6 1 1 2-7 2-5 8-3-1 1-8-7-2Z"/></g>
+            <g class="route-labels"><text x="414" y="142" text-anchor="middle">Đà Nẵng</text><text x="104" y="121" text-anchor="middle">Athens, GA</text></g>
+          </svg>
         </div>
         <figure class="polaroid">
           <img src="assets/img/life/me-atlanta.jpg" width="800" height="1000" alt="Thong leaning against a red brick wall under a street lamp decorated for the holidays.">
@@ -86,7 +102,38 @@
 
       <section data-chibi="wave" aria-labelledby="being-there">
         <h2 id="being-there">Being there for others</h2>
-        <img src="assets/img/illo/home-generations.svg" alt="" class="illo illo-side" width="320" height="260" loading="lazy">
+        <svg class="illo illo-side family-scene" width="320" height="260" viewBox="0 0 320 260" fill="none" aria-hidden="true" focusable="false">
+          <ellipse class="family-moon-glow" cx="255" cy="43" rx="30" ry="29" fill="#F4D58D"/>
+          <path d="M249 28a22 22 0 1 0 25 29 23 23 0 0 1-25-29Z" fill="#F4D58D"/>
+          <g stroke="#F3EAD6" stroke-width="2" stroke-linecap="round"><path d="M69 37v8m-4-4h8M281 103v6m-3-3h6M219 16v6m-3-3h6"/></g>
+          <g fill="#6FA8FF"><circle cx="39" cy="91" r="2"/><circle cx="291" cy="75" r="2"/><circle cx="94" cy="20" r="2"/></g>
+          <path d="M51 237V130l28-10 29 10v107M215 237V109l29-12 28 12v128" fill="#111A38"/>
+          <path d="M64 147h30v7H64zm166-24h28v7h-28zm0 22h28v7h-28z" fill="#24305F"/>
+          <rect x="109" y="40" width="105" height="196" rx="5" fill="#1A2550" stroke="#E8B651" stroke-width="2.5"/>
+          <path d="M102 41h119v10H102z" fill="#24305F" stroke="#E8B651" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M119 39V27h85v12M130 28v11m18-11v11m18-11v11m18-11v11" stroke="#E8B651" stroke-width="2.5" stroke-linecap="round"/>
+          <g fill="#FFD98A" stroke="#F4D58D" stroke-width="2">
+            <rect class="family-window" x="133" y="62" width="58" height="40" rx="7" style="--window-delay: 0s"/>
+            <rect class="family-window" x="133" y="119" width="58" height="40" rx="7" style="--window-delay: 1.7s"/>
+            <rect class="family-window" x="133" y="176" width="58" height="40" rx="7" style="--window-delay: 3.4s"/>
+          </g>
+          <g fill="#1A2550">
+            <circle cx="168" cy="71" r="5"/><circle cx="162" cy="79" r="9"/><path d="M145 101c0-13 7-17 17-17s17 4 17 17Z"/>
+            <circle cx="162" cy="135" r="9"/><path d="M141 158c1-13 8-17 21-17s20 4 21 17Z"/>
+            <circle cx="161" cy="194" r="7"/><path d="M147 215c0-11 5-15 14-15s14 4 14 15Z"/>
+          </g>
+          <path d="m168 208 10-10v-7" stroke="#1A2550" stroke-width="5" stroke-linecap="round"/>
+          <path d="m156 89 6 7 6-7M157 145l5 6 5-6" stroke="#F4D58D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <g stroke="#E8B651" stroke-width="2.5" stroke-linecap="round">
+            <path d="M126 106h72m-72 57h72m-72 57h72M122 111h80m-80 57h80m-80 57h80"/>
+            <path d="M129 106v5m16-5v5m17-5v5m17-5v5m16-5v5"/>
+          </g>
+          <path d="M132 236h60m-69 6h78M40 244h240" stroke="#F4D58D" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M80 220c-16-1-20-11-17-20 14 0 22 9 17 20m1-2c-1-16 7-24 17-23 2 13-4 22-17 23" fill="#24305F"/>
+          <path d="M72 219h20l-3 18H75Z" fill="#E8B651"/>
+          <path d="M239 236v-21m0 10-8-7m8 1 9-9" stroke="#F4D58D" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="230" cy="216" r="5" fill="#6FA8FF"/><circle cx="250" cy="207" r="5" fill="#6FA8FF"/>
+        </svg>
         <p>When I interviewed my grandmother and my father about their lives, I expected to hear mostly about hardship. My grandmother had worked in the rice fields from the age of twelve. My father had changed his university major to pursue a field he believed had a future. But when I asked what mattered most, their answers were about family. My grandmother wanted peace in the family. My father said wealth and status meant little compared with watching his children grow up.</p>
         <p>Those conversations changed how I understood their hard work. We work hard so that, in the end, we get to be there for one another. I want to carry that idea into what I build: pay attention to the people who will use it, take their difficulties seriously, and keep working until it is easier for them.</p>
       </section>
