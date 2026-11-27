@@ -303,8 +303,9 @@ tools.innerHTML = `<button class="chip-btn keyring" type="button" aria-label="Es
   <button class="chip-btn cmdk" type="button" aria-label="Open command palette"><kbd>${/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl"} K</kbd></button>`;
 nav?.append(tools);
 const ring = $(".keyring", tools);
+const flyingKeys = new Set();
 function paintRing() {
-  $$(".slots i", ring).forEach((s, i) => s.classList.toggle("on", i < found.size));
+  $$(".slots i", ring).forEach((s, i) => s.classList.toggle("on", i < found.size && !flyingKeys.has(i)));
   $(".count", ring).textContent = `${found.size}/5`;
   ring.setAttribute("aria-label", `Escape room: ${found.size} of 5 keys found`);
 }
@@ -319,11 +320,47 @@ $$(".key[data-key]").forEach(k => {
 function collect(id, el) {
   if (found.has(id)) return;
   found.add(id); store.set("tt-keys", [...found]);
+  flyKey(el, found.size - 1);
   el?.classList.add("found"); setTimeout(() => el?.remove(), 700);
-  paintRing(); ring.classList.remove("bump"); void ring.offsetWidth; ring.classList.add("bump");
+  paintRing();
   chibiCheer();
   if (found.size === 5) { toast("All 5 keys found. Mini me has something for you…"); setTimeout(giveCookie, 1300); }
   else toast(`Key found! ${found.size} of 5. ${5 - found.size} more hidden around the site.`);
+}
+
+/* ---------- Key collection flight ---------- */
+function flyKey(el, index) {
+  const slot = $$(".slots i", ring)[index], icon = el?.querySelector("svg");
+  if (reduce || !icon || !slot || !ring.isConnected) return;
+  // Hold only the travelling slot so the accessible count can update immediately.
+  flyingKeys.add(index);
+  const a = icon.getBoundingClientRect(), b = slot.getBoundingClientRect();
+  const x = a.left + a.width / 2, y = a.top + a.height / 2, dx = b.left + b.width / 2 - x, dy = b.top + b.height / 2 - y;
+  const layer = document.createElement("div"); layer.className = "key-fx"; layer.setAttribute("aria-hidden", "true");
+  const sprite = document.createElement("span"); sprite.className = "key-flight"; sprite.append(icon.cloneNode(true));
+  Object.assign(sprite.style, { left: `${x}px`, top: `${y}px`, width: `${a.width}px`, height: `${a.height}px` });
+  layer.append(sprite); document.body.append(layer);
+  const burst = document.createElement("i"); burst.className = "key-shock"; burst.style.left = `${x}px`; burst.style.top = `${y}px`; layer.append(burst);
+  burst.animate([{ transform: "translate(-50%,-50%) scale(.2)", opacity: 1 }, { transform: "translate(-50%,-50%) scale(3)", opacity: 0 }], { duration: 550, fill: "forwards", easing: "ease-out" });
+  for (let i = 0; i < 10; i++) {
+    const p = document.createElement("i"), angle = i * Math.PI / 5, distance = 32 + (i % 3) * 12;
+    p.className = "key-spark"; p.style.left = `${x}px`; p.style.top = `${y}px`; layer.append(p);
+    p.animate([{ transform: "translate(-50%,-50%) scale(.4)", opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px),calc(-50% + ${Math.sin(angle) * distance}px)) rotate(100deg) scale(0)`, opacity: 0 }], { duration: 500 + i * 22, fill: "forwards", easing: "ease-out" });
+  }
+  // Sample a quadratic arc once; the compositor handles every animation frame.
+  const bend = Math.min(160, Math.abs(dy) * .25 + 55), controlX = Math.min(innerWidth - 24, Math.max(24, x + dx * .35 + bend)) - x, controlY = Math.max(24, Math.min(y, y + dy) - bend) - y;
+  const frames = Array.from({ length: 21 }, (_, i) => {
+    const t = i / 20, u = 1 - t, px = 2 * u * t * controlX + t * t * dx, py = 2 * u * t * controlY + t * t * dy;
+    return { transform: `translate(-50%,-50%) translate(${px}px,${py}px) rotate(${t * 150}deg) scale(${1 - t * .78})` };
+  });
+  const arrive = () => {
+    flyingKeys.delete(index); paintRing(); layer.remove();
+    slot.animate([{ transform: "scale(.6)" }, { transform: "scale(1.6)", offset: .55 }, { transform: "scale(1)" }], { duration: 360, easing: "ease-out" });
+    ring.classList.add("bump"); ring.addEventListener("animationend", () => ring.classList.remove("bump"), { once: true });
+    const glint = document.createElement("i"); glint.className = "keyring-glint"; glint.setAttribute("aria-hidden", "true"); ring.append(glint);
+    glint.animate([{ transform: "translateX(-160%) skewX(-20deg)", opacity: 0 }, { opacity: .9, offset: .3 }, { transform: "translateX(450%) skewX(-20deg)", opacity: 0 }], { duration: 500 }).finished.then(() => glint.remove());
+  };
+  sprite.animate(frames, { duration: 820, easing: "cubic-bezier(.3,0,.2,1)", fill: "forwards" }).finished.then(arrive);
 }
 
 function resetKeys() {
@@ -335,7 +372,8 @@ function resetKeys() {
 // page-specific reveal triggers
 const keyFor = id => $(`.key[data-key="${id}"]`);
 $(".flip")?.addEventListener("flipped", () => keyFor("about")?.removeAttribute("hidden"));
-$("#demo-btn")?.addEventListener("click", () => setTimeout(() => keyFor("gp")?.removeAttribute("hidden"), 1500));
+// both "Play demo" and the hero's "Watch demo" start the demo, so both reveal the key
+$$("#demo-btn, a[href=\"#demo\"]").forEach(b => b.addEventListener("click", () => setTimeout(() => keyFor("gp")?.removeAttribute("hidden"), 1500)));
 const lastItem = $$(".resume-item").at(-1);
 lastItem?.addEventListener("revealed", () => keyFor("resume")?.removeAttribute("hidden"));
 if (reduce && lastItem) keyFor("resume")?.removeAttribute("hidden");
@@ -649,9 +687,11 @@ const bubble = document.createElement("div"); bubble.className = "bubble"; bubbl
 document.body.append(chibi, bubble);
 
 let cx = -90, running = false, paused = false, act = document.body.dataset.chibi || "wave", bubbleT;
+const phoneChibi = matchMedia("(max-width: 640px)");
+let entering = !reduce && !phoneChibi.matches;
 const setX = x => { cx = x; chibi.style.setProperty("--cx", x + "px"); };
 const ACTS = ["wave", "laptop", "camera", "racket", "read"];
-function showAct() { ACTS.forEach(a => chibi.classList.toggle("act-" + a, !running && a === act)); }
+function showAct() { ACTS.forEach(a => chibi.classList.toggle("act-" + a, !entering && !running && a === act)); }
 
 // which section is on screen decides what he does
 const watched = $$("[data-chibi]"), ratios = new Map();
@@ -665,7 +705,7 @@ if (watched.length) {
 }
 
 function goTo(target) {
-  if (reduce || running) return;
+  if (reduce || running || entering || phoneChibi.matches) return;
   running = true; showAct();
   const dir = Math.sign(target - cx) || 1;
   chibi.classList.add("running"); chibi.classList.toggle("flip", dir < 0);
@@ -686,15 +726,89 @@ function say(text) {
   bubble.style.left = Math.min(Math.max(cx + 32, 140), innerWidth - 140) + "px";
   clearTimeout(bubbleT); bubbleT = setTimeout(() => { bubble.hidden = true; paused = false; chibi.classList.toggle("running", running); }, 5000);
 }
-chibi.addEventListener("click", () => { paused = true; chibi.classList.remove("running"); say(hintText()); });
+chibi.addEventListener("click", () => { if (entering) return; paused = true; chibi.classList.remove("running"); say(hintText()); });
 function chibiCheer() {
-  if (reduce) return;
+  if (reduce || entering) return;
   chibi.classList.add("cheer"); setTimeout(() => chibi.classList.remove("cheer"), 1400);
 }
-if (reduce) { setX(12); showAct(); } // stands still in the corner with his prop; still clickable
+if (!entering) { setX(reduce ? 12 : Math.min(innerWidth * .18, 220)); showAct(); }
 else {
-  setTimeout(() => goTo(Math.min(innerWidth * .18, 220)), 2200);
+  chibi.disabled = true; chibi.style.opacity = "0";
+  let transition = Promise.resolve();
+  addEventListener("pagereveal", e => { if (e.viewTransition) transition = e.viewTransition.finished.catch(() => {}); });
+  const start = () => setTimeout(() => transition.then(chibiEntrance), 500);
+  if (document.readyState === "complete") start(); else addEventListener("load", start, { once: true });
+}
+if (!reduce) {
   setInterval(() => { if (!paused && !document.hidden) goTo(randomSpot()); }, 14000);
+}
+
+/* ---------- Chibi: six ways to arrive ---------- */
+function chibiEntrance() {
+  const target = Math.min(innerWidth * .18, 220), height = innerHeight;
+  const land = () => { entering = false; chibi.disabled = false; chibi.style.opacity = ""; chibi.classList.remove("running", "flip"); setX(Math.min(target, innerWidth - 80)); showAct(); };
+  if (phoneChibi.matches) { land(); return; }
+  const names = ["helicopter", "tsunami", "parachute", "rocket", "portal", "run"];
+  let previous; try { previous = sessionStorage.getItem("chibi-entrance"); } catch {}
+  const choices = names.filter(n => n !== previous), forced = new URLSearchParams(location.search).get("entrance");
+  const name = names.includes(forced) ? forced : choices[Math.floor(Math.random() * choices.length)];
+  try { sessionStorage.setItem("chibi-entrance", name); } catch {}
+  const layer = document.createElement("div"); layer.className = `chibi-entrance entrance-${name}`; layer.setAttribute("aria-hidden", "true");
+  document.body.append(layer); layer.append(chibi); setX(target);
+  const duration = name === "run" ? 1700 : 2400, animations = [];
+  const animate = (el, frames) => { const a = el.animate(frames, { duration, fill: "both", easing: "linear" }); animations.push(a); return a; };
+  const route = points => points.map(([offset, x, y, r = 0, s = 1]) => ({ offset, transform: `translate(${x}px,${y}px) rotate(${r}deg) scale(${s})` }));
+  const move = points => route(points.map(([t, x, y, r, s]) => [t, target + x, y, r, s]));
+  const prop = (kind, x, bottom, w, h, svg) => {
+    const el = document.createElement("div"); el.className = `entrance-prop ${kind}`; el.setAttribute("aria-hidden", "true");
+    Object.assign(el.style, { left: `${x}px`, bottom: `${bottom}px`, width: `${w}px`, height: `${h}px` });
+    el.innerHTML = `<svg viewBox="0 0 ${w} ${h}" fill="none" xmlns="http://www.w3.org/2000/svg">${svg}</svg>`; layer.append(el); return el;
+  };
+  let points;
+  if (name === "helicopter") {
+    const drop = Math.max(140, height - 258), heli = prop("helicopter", target - 43, height - 188, 150, 82,
+      '<path d="M73 8v17M19 8h112M42 67h63M50 57l-5 10m49-10 5 10" stroke="#F4D58D" stroke-width="4" stroke-linecap="round"/><path d="M27 39L5 25v28l28-5" fill="#1A2550" stroke="#E8B651" stroke-width="2"/><rect x="32" y="26" width="86" height="33" rx="16" fill="#111A38" stroke="#E8B651" stroke-width="2"/><path d="M80 29h19q14 2 15 16H80z" fill="#6FA8FF"/><circle cx="55" cy="42" r="6" fill="#F4D58D"/><path class="rotor" d="M12 8h126" stroke="#F3EAD6" stroke-width="3"/>');
+    animate(heli, route([[0, innerWidth - target, -160, -12], [.22, 0, 0], [.68, 0, -5], [.8, 12, -12], [1, innerWidth - target, -190, 15]]));
+    const rope = prop("rope", target + 31, 90, 2, drop, `<path d="M1 0v${drop}" stroke="#F4D58D" stroke-width="2" stroke-dasharray="4 3"/>`);
+    animate(rope, [{ transform: "scaleY(0)", opacity: 0 }, { transform: "scaleY(0)", opacity: 1, offset: .22 }, { transform: "scaleY(1)", opacity: 1, offset: .72 }, { transform: "scaleY(0)", opacity: 0, offset: .88 }, { opacity: 0 }]);
+    points = [[0, 0, -height], [.22, 0, -drop], [.42, 7, -drop * .65, 8], [.72, 0, 0], [.79, 0, 0, 0, .88], [.86, 0, -10], [1, 0, 0]];
+  } else if (name === "tsunami") {
+    const wave = prop("wave", target - 130, 0, 300, 126,
+      '<path d="M0 126V92q45-3 77-48C126-19 230 4 216 61q-9 29-43 15 31-5 19-26-17-25-41 12 28 44 149 45v19z" fill="#1A2550" stroke="#6FA8FF" stroke-width="3"/><path d="M5 94q47-4 82-48C126-5 222 7 211 55q-5 25-32 19 31-10 10-28-23-16-46 21" stroke="#F3EAD6" stroke-width="7" stroke-linecap="round"/><path d="M27 111q46-23 83-18t69 17 92 2" stroke="#6FA8FF" stroke-width="3"/>');
+    animate(wave, route([[0, -target - 300, 16], [.4, -45, 0], [.65, 45, 8], [1, innerWidth - target + 300, 36]]));
+    points = [[0, -target - 100, 30, -80], [.32, -65, -52, -35], [.48, -12, -68, 20], [.64, 10, -24, -12], [.76, 0, 0, 0, .85], [.86, 0, -9], [1, 0, 0]];
+    for (let i = 0; i < 3; i++) {
+      const drop = prop("droplet", target + i * 34 - 24, 60, 12, 20, '<path d="M6 1Q-5 14 6 19 17 14 6 1" fill="#6FA8FF"/>');
+      animate(drop, [{ transform: "translate(-90px,0) scale(0)", opacity: 0 }, { transform: `translate(0,${-60 - i * 16}px) scale(1)`, opacity: 1, offset: .5 }, { transform: `translate(${60 + i * 16}px,30px) scale(.3)`, opacity: 0, offset: .85 }, { opacity: 0 }]);
+    }
+  } else if (name === "parachute") {
+    points = [[0, 38, -height - 120, -12], [.25, -28, -height * .65, 12], [.48, 22, -height * .35, -10], [.7, -8, -50, 6], [.8, 0, 0, 0, .88], [.88, 0, -8], [1, 0, 0]];
+    const canopy = prop("parachute", target - 38, 80, 140, 140,
+      '<path d="M3 55C9-16 131-16 137 55q-18-14-34 0-17-14-33 0-17-14-34 0-17-14-33 0" fill="#E8B651" stroke="#F4D58D" stroke-width="2"/><path d="M70 3Q40 18 36 55m34-52q30 15 33 52M3 55l67 82 67-82m-101 0 34 82 33-82" stroke="#F3EAD6" stroke-width="1.5"/>');
+    animate(canopy, route([...points.slice(0, 5), [.9, 0, -25, 15, .3], [1, 18, -20, 25, 0]]).map((f, i) => ({ ...f, opacity: i < 5 ? 1 : i === 5 ? .5 : 0 })));
+  } else if (name === "rocket") {
+    points = [[0, 0, 170, -8], [.18, 0, 140, -8], [.42, -12, -145, 12], [.57, 10, -180, -8], [.75, 0, 0, 0, .85], [.84, 0, -22], [.92, 0, 0, 0, .95], [1, 0, 0]];
+    const pack = prop("jetpack", target + 10, 0, 44, 76,
+      '<rect x="2" y="5" width="13" height="37" rx="6" fill="#1A2550" stroke="#E8B651" stroke-width="2"/><rect x="29" y="5" width="13" height="37" rx="6" fill="#1A2550" stroke="#E8B651" stroke-width="2"/><g class="jet-flame"><path d="M3 43q-1 19 6 32 9-19 5-32M30 43q-1 19 6 32 9-19 5-32" fill="#E8B651"/><path d="M6 43l3 21 3-21m21 0 3 21 3-21" stroke="#F3EAD6" stroke-width="3"/></g>');
+    animate(pack, route(points).map((f, i) => ({ ...f, opacity: i < 5 ? 1 : 0 })));
+  } else if (name === "portal") {
+    const portal = prop("portal", target - 25, 0, 114, 32,
+      '<ellipse cx="57" cy="16" rx="50" ry="11" fill="#111A38" stroke="#E8B651" stroke-width="4"/><ellipse cx="57" cy="16" rx="41" ry="6" stroke="#F4D58D" stroke-width="2"/><path d="M3 9l5-5m98 18 5 4M24 2v5m67 18 3 5" stroke="#6FA8FF" stroke-width="2"/>');
+    animate(portal, [{ transform: "scale(0)", opacity: 0 }, { transform: "scale(1.1)", opacity: 1, offset: .2 }, { transform: "scale(1)", opacity: 1, offset: .7 }, { transform: "scale(0)", opacity: 0, offset: .94 }, { opacity: 0 }]);
+    points = [[0, 0, 110, 0, .35], [.24, 0, 110, 0, .35], [.49, 0, -65, -12], [.65, 0, 0, 0, .85], [.76, 0, -16], [.86, 0, 0], [1, 0, 0]];
+  } else {
+    chibi.classList.add("running"); points = [[0, -target - 90, 0], [1, 0, 0]];
+  }
+  const arrival = animate(chibi, move(points)); chibi.style.opacity = "";
+  let finished = false;
+  const finish = () => {
+    if (finished) return; finished = true;
+    animations.forEach(a => a.cancel()); document.body.append(chibi); layer.remove(); land();
+  };
+  // Resizing into the phone header must cancel the desktop flight immediately.
+  const resize = () => { if (phoneChibi.matches) finish(); };
+  phoneChibi.addEventListener("change", resize);
+  arrival.finished.then(finish, finish).finally(() => phoneChibi.removeEventListener("change", resize));
 }
 
 /* ---------- Hobby scenes play only while visible ---------- */
