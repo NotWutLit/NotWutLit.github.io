@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="260" viewBox="0 0 320 260" fill="none">
+  <ellipse cx="155" cy="227" rx="123" ry="10" fill="#111A38"/>
+  <!-- Folded paper and a small, imperfect wax seal. -->
+  <g transform="rotate(-7 139 156)" stroke-linejoin="round">
+    <rect x="35" y="94" width="207" height="128" rx="10" fill="#1A2550" stroke="#F3EAD6" stroke-width="2.5"/>
+    <path d="m40 216 79-65m118 65-79-65" stroke="#F4D58D" stroke-width="2.5"/>
+    <path d="m37 100 88 68a23 23 0 0 0 28 0l87-68" fill="#24305F" stroke="#F3EAD6" stroke-width="2.5"/>
+    <path d="M137 153c6-3 10 1 14 2 6 0 7 5 7 10 3 5 0 10-4 12-2 6-8 7-13 5-5 2-10-1-11-6-5-2-7-8-4-12 0-6 5-10 11-11Z" fill="#E8B651"/>
+    <circle cx="142" cy="168" r="10" stroke="#F4D58D" stroke-width="2"/>
+    <path d="M136 166c0-3 4-4 6-1 2-3 6-2 6 1 0 3-6 7-6 7s-6-4-6-7Z" fill="#1A2550"/>
+  </g>
+  <!-- Postage with scalloped edges, a lotus and a little home. -->
+  <g transform="rotate(-12 170 64)">
+    <path d="M145 36h50v57h-50Z" fill="#F3EAD6" stroke="#F3EAD6" stroke-width="5" stroke-dasharray="1 6" stroke-linecap="round"/>
+    <rect x="150" y="41" width="40" height="47" rx="3" fill="#1A2550"/>
+    <path d="M170 74c-12-4-17-11-13-17 8 1 13 7 13 17m0 0c12-4 17-11 13-17-8 1-13 7-13 17" fill="#6FA8FF"/>
+    <path d="M170 74c-8-8-8-17 0-23 8 6 8 15 0 23Z" fill="#F4D58D"/>
+    <path d="M157 78h26" stroke="#E8B651" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g transform="rotate(11 232 79)">
+    <path d="M207 50h50v57h-50Z" fill="#F4D58D" stroke="#F4D58D" stroke-width="5" stroke-dasharray="1 6" stroke-linecap="round"/>
+    <rect x="212" y="55" width="40" height="47" rx="3" fill="#24305F"/>
+    <path d="M220 77h24v19h-24Z" fill="#6FA8FF"/>
+    <path d="m217 77 15-14 15 14" fill="#1A2550" stroke="#F3EAD6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="227" y="81" width="10" height="10" rx="2" fill="#FFD98A"/>
+    <path d="M217 96h30" stroke="#F3EAD6" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- Fountain pen, capped with a bright split nib. -->
+  <g transform="rotate(28 268 173)" stroke-linejoin="round">
+    <rect x="261" y="110" width="14" height="94" rx="7" fill="#24305F" stroke="#E8B651" stroke-width="2.5"/>
+    <path d="M265 116v30" stroke="#F3EAD6" stroke-width="2" stroke-linecap="round"/>
+    <path d="M260 193h16v11h-16Z" fill="#E8B651"/>
+    <path d="m261 204 7 25 7-25" fill="#F4D58D" stroke="#E8B651" stroke-width="2"/>
+    <path d="M268 216v10" stroke="#1A2550" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="268" cy="214" r="2" fill="#1A2550"/>
+  </g>
+  <path d="M56 53c0-6 7-8 11-3 4-5 11-3 11 3 0 6-11 13-11 13S56 59 56 53Z" fill="#E8B651"/>
+  <path d="M102 30c0-4 5-5 7-2 3-3 8-2 8 2 0 4-8 9-8 9s-7-5-7-9Z" fill="#6FA8FF"/>
+  <path d="M33 77v8m-4-4h8M285 54v10m-5-5h10M179 238v8m-4-4h8" stroke="#F3EAD6" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="88" cy="80" r="2" fill="#F4D58D"/><circle cx="276" cy="29" r="2" fill="#6FA8FF"/><circle cx="22" cy="192" r="2" fill="#E8B651"/>
+</svg>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="260" viewBox="0 0 320 260" fill="none">
+  <ellipse cx="155" cy="236" rx="112" ry="9" fill="#111A38"/>
+  <!-- Loose cuffs and gently creased hands cradle a simple screen. -->
+  <path d="m58 244 8-57 14-46c3-11 8-19 14-18 8 1 6 12 4 20l-3 18 25 27 8 56" fill="#F3EAD6" stroke="#E8B651" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="m203 244-2-45 20-41 7-20c3-9 8-12 13-9 7 4 3 15 1 22l-7 26 8 67" fill="#F3EAD6" stroke="#E8B651" stroke-width="2.5" stroke-linejoin="round"/>
+  <rect x="98" y="29" width="122" height="186" rx="20" fill="#111A38" stroke="#F3EAD6" stroke-width="2.5"/>
+  <rect x="107" y="39" width="104" height="164" rx="13" fill="#1A2550"/>
+  <path d="M146 47h26" stroke="#F3EAD6" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="159" cy="66" r="5" fill="#F4D58D"/>
+  <rect x="118" y="82" width="82" height="30" rx="8" fill="#E8B651"/>
+  <rect x="118" y="121" width="82" height="30" rx="8" fill="#6FA8FF"/>
+  <rect x="118" y="160" width="82" height="30" rx="8" fill="#F3EAD6"/>
+  <g fill="#1A2550">
+    <path d="M129 93c0-5 6-6 9-2 3-4 9-3 9 2 0 5-9 10-9 10s-9-5-9-10Z"/>
+    <path d="m130 135 6 6 11-12" stroke="#1A2550" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="138" cy="175" r="7"/>
+  </g>
+  <g fill="#1A2550"><rect x="157" y="94" width="31" height="5" rx="2.5"/><rect x="157" y="133" width="31" height="5" rx="2.5"/><rect x="157" y="172" width="31" height="5" rx="2.5"/></g>
+  <path d="M81 205c-4-18 0-36 11-47l14-14c6-6 12-4 14 1 2 4-1 9-5 14l-10 15c-3 5-1 12 4 17M220 205c9-17 11-33 5-46l-9-21c-3-8-9-9-13-5s-2 10 0 16l5 18c1 5-3 10-6 13" fill="#F3EAD6" stroke="#E8B651" stroke-width="2.5" stroke-linecap="round"/>
+  <g stroke="#E8B651" stroke-width="2" stroke-linecap="round">
+    <path d="m88 187 8 4m-9 3 7 3m16-44 5 3m99-8-6 2m10 35-8 3m9 4-8 3"/>
+  </g>
+  <path d="m55 218 59 9 3 25H50Z" fill="#24305F" stroke="#F3EAD6" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="m201 227 45-9 10 34h-57Z" fill="#24305F" stroke="#F3EAD6" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="105" cy="238" r="2.5" fill="#E8B651"/><circle cx="211" cy="238" r="2.5" fill="#E8B651"/>
+  <!-- Reading glasses resting beside the phone. -->
+  <g transform="rotate(-16 260 83)" stroke="#E8B651" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="233" y="76" width="23" height="17" rx="7" fill="#111A38"/>
+    <rect x="264" y="76" width="23" height="17" rx="7" fill="#111A38"/>
+    <path d="M256 81q4-5 8 0m-31-1-8-30q-2-6-7-4m69 34 7-29q2-6 7-4"/>
+  </g>
+  <path d="M54 55v10m-5-5h10M270 181v8m-4-4h8" stroke="#F3EAD6" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="75" cy="91" r="2" fill="#6FA8FF"/><circle cx="246" cy="28" r="2" fill="#F4D58D"/>
+</svg>

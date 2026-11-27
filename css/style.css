@@ -825,3 +825,16 @@ section:has(> .side-photo)::after { content: ""; display: table; clear: both; } 
 .term-in input::placeholder { color: #7A8096; }
 .term-in kbd { align-self: center; padding: 1px 6px; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font: 11px var(--mono); }
 @media (pointer: coarse) { .term-in kbd { display: none; } .term-out { height: min(360px, 50vh); } }
+
+/* ---------- Illustrations ---------- */
+.illo { display: block; height: auto; max-width: 100%; animation: illo-float 6s ease-in-out infinite; }
+@keyframes illo-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.illo-side { width: min(260px, 70%); margin: 0 auto 1.5rem; }
+section:has(.illo-side)::after { content: ""; display: table; clear: both; }
+@media (min-width: 760px) { .illo-side { float: right; margin: 0 0 1rem 2rem; } }
+.illo-wide { width: min(520px, 100%); margin: 1.5rem auto 2rem; }
+.illo-aside { width: 100%; max-width: 240px; margin-top: 2rem; opacity: .9; }
+@media (max-width: 959px) { .illo-aside { display: none; } }
+.illo-col { width: min(280px, 80%); margin-top: 2rem; }
+@media (prefers-reduced-motion: reduce) { .illo { animation: none; transform: none; } }
+@media print { .illo { display: none !important; } }
