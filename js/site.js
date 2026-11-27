@@ -201,7 +201,7 @@ function collect(id, el) {
   el?.classList.add("found"); setTimeout(() => el?.remove(), 700);
   paintRing(); ring.classList.remove("bump"); void ring.offsetWidth; ring.classList.add("bump");
   chibiCheer();
-  if (found.size === 5) { toast("All 5 keys found. The vault is open!"); setTimeout(openVault, 1200); }
+  if (found.size === 5) { toast("All 5 keys found. Mini me has something for you…"); setTimeout(giveCookie, 1300); }
   else toast(`Key found! ${found.size} of 5. ${5 - found.size} more hidden around the site.`);
 }
 
@@ -278,39 +278,61 @@ function makeDialog(cls, html, label) {
   document.body.append(d); return d;
 }
 
-/* ---------- Rooms dialog (key ring) ---------- */
-const rooms = makeDialog("rooms", "", "Escape room progress");
-function openRooms() {
-  rooms.innerHTML = `<h2>Escape the portfolio</h2><p class="hint">Each page is a room with one hidden key. Find all five to open the vault.</p>
-    <ol>${ROOMS.map(r => `<li class="${found.has(r.id) ? "on" : ""}"><a href="${r.url}">${r.name}</a><span class="state">${found.has(r.id) ? "key found" : "locked"}</span></li>`).join("")}</ol>
-    <div class="actions">${found.size === 5 ? `<button class="btn" data-act="vault">Open the vault</button>` : `<button class="btn ghost" data-act="hint">Hint for this room</button>`}<button class="btn ghost" data-act="close">Close</button>${found.size ? `<button class="btn ghost" data-act="reset">Reset keys</button>` : ""}</div><p class="hint" data-hint></p>`;
-  rooms.querySelector("[data-act=close]").onclick = () => rooms.close();
-  rooms.querySelector("[data-act=hint]")?.addEventListener("click", () => { rooms.querySelector("[data-hint]").textContent = hintText(); });
-  rooms.querySelector("[data-act=vault]")?.addEventListener("click", () => { rooms.close(); openVault(); });
-  const rb = rooms.querySelector("[data-act=reset]");
-  rb?.addEventListener("click", () => {
-    if (rb.dataset.sure) { rooms.close(); resetKeys(); return; }
-    rb.dataset.sure = "1"; rb.classList.add("danger"); rb.textContent = "Sure? Click again to reset"; // two clicks, so nobody loses progress by accident
-  });
-  rooms.showModal();
-}
-ring.addEventListener("click", openRooms);
-function hintText() {
-  const r = ROOMS.find(r => r.id === page);
+/* ---------- Key ring opens the terminal ---------- */
+ring.addEventListener("click", () => openTerminal("keys"));
+function hintText(id = page) {
+  const r = ROOMS.find(r => r.id === id);
   if (!r) return "Explore the pages. Each one hides a key.";
-  if (found.has(r.id)) { const next = ROOMS.find(x => !found.has(x.id)); return next ? `This room is done. Next, try ${next.name}.` : "You found every key. Open the vault!"; }
+  if (found.has(r.id)) { const next = ROOMS.find(x => !found.has(x.id)); return next ? `${r.name} is done. Next, try ${next.name}.` : "You found every key. Type unlock!"; }
   return r.hint;
 }
 
-/* ---------- Vault ---------- */
-const vault = makeDialog("vault", "", "Vault unlocked");
-function openVault() {
-  vault.innerHTML = `<div class="door" aria-hidden="true"></div><h2>You escaped!</h2>
-    <p>Thanks for exploring every room. You clearly pay attention to detail, so let’s talk.</p>
-    <div class="actions" style="justify-content:center"><a class="btn" href="mailto:${EMAIL}">Email Thong</a><button class="btn ghost" data-act="term">Open the terminal</button></div>
-    <p class="hint">In the terminal, try <span class="mono">unlock</span>.</p>`;
-  vault.querySelector("[data-act=term]").onclick = () => { vault.close(); openTerminal(); };
-  vault.showModal(); confetti(); chibiCheer();
+/* ---------- The reward: chibi me hands you a big cookie ---------- */
+const BITES = [[170, 58], [26, 128], [138, 178], [52, 36], [100, 100]];
+function giveCookie() {
+  const d = makeDialog("cookie-scene", `
+    <div class="cookie-stage">
+      <button class="cookie" type="button" aria-label="Take a bite of the cookie">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <defs><mask id="bite-mask"><rect width="200" height="200" fill="#fff"/></mask></defs>
+          <g mask="url(#bite-mask)">
+            <circle cx="100" cy="100" r="92" fill="#B47035"/><circle cx="100" cy="100" r="84" fill="#D3924E"/>
+            <circle cx="72" cy="80" r="30" fill="#DDA160" opacity=".5"/>
+            <g fill="#4A2A16"><ellipse cx="70" cy="62" rx="9" ry="7"/><ellipse cx="126" cy="54" rx="8" ry="6"/><ellipse cx="140" cy="104" rx="10" ry="8"/>
+              <ellipse cx="96" cy="112" rx="8" ry="7"/><ellipse cx="58" cy="120" rx="9" ry="7"/><ellipse cx="110" cy="150" rx="9" ry="7"/><ellipse cx="150" cy="146" rx="7" ry="6"/><ellipse cx="44" cy="88" rx="6" ry="5"/></g>
+          </g>
+        </svg>
+      </button>
+      <div class="big-chibi" aria-hidden="true">${CHIBI}</div>
+    </div>
+    <h2>You <em>escaped!</em></h2>
+    <p class="cookie-msg" role="status">Mini me baked you a big cookie for finding all five keys. Click it to take a bite.</p>
+    <div class="actions" style="justify-content:center"><a class="btn" href="mailto:${EMAIL}">Email Thong</a><button class="btn ghost" type="button" data-act="close">Close</button></div>`, "You escaped: a cookie from mini Thong");
+  d.addEventListener("close", () => d.remove());
+  $("[data-act=close]", d).onclick = () => d.close();
+  const cookie = $(".cookie", d), mask = $("#bite-mask", d), msg = $(".cookie-msg", d);
+  let bites = 0;
+  cookie.addEventListener("click", e => {
+    if (bites >= BITES.length) return;
+    const [x, y] = BITES[bites++];
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", bites === BITES.length ? 120 : 30); c.setAttribute("fill", "#000");
+    mask.append(c);
+    crumbs(cookie);
+    cookie.classList.remove("chomp"); void cookie.offsetWidth; cookie.classList.add("chomp");
+    msg.textContent = bites < BITES.length ? ["Nom.", "Nom nom.", "Still good?", "One more bite…"][bites - 1] : "All gone. Thanks for exploring every room! Want to talk? Email me.";
+    if (bites === BITES.length) { cookie.disabled = true; cookie.setAttribute("aria-label", "Cookie finished"); }
+  });
+  d.showModal(); confetti(); chibiCheer();
+}
+function crumbs(el) {
+  if (reduce) return;
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement("i"); s.className = "crumb";
+    s.style.setProperty("--dx", (Math.random() - .5) * 160 + "px"); s.style.setProperty("--dy", 60 + Math.random() * 120 + "px");
+    s.style.left = 30 + Math.random() * 40 + "%"; s.style.top = 30 + Math.random() * 40 + "%";
+    el.append(s); setTimeout(() => s.remove(), 900);
+  }
 }
 function confetti() {
   if (reduce) return;
@@ -331,8 +353,9 @@ const term = makeDialog("terminal", `<div class="term-bar"><i></i><i></i><i></i>
   <form class="term-in"><span aria-hidden="true">$</span><label class="sr-only" for="term-input">Terminal command</label><input id="term-input" autocomplete="off" spellcheck="false"></form>`, "Terminal");
 const tout = $(".term-out", term), tin = $("#term-input", term);
 const print = (html, cls = "") => { const d = document.createElement("div"); if (cls) d.className = cls; d.innerHTML = html; tout.append(d); tout.scrollTop = tout.scrollHeight; };
+let resetArmed = false;
 const CMDS = {
-  help: () => print(`commands: <span class="p">whoami</span>, <span class="p">about</span>, <span class="p">projects</span>, <span class="p">skills</span>, <span class="p">contact</span>, <span class="p">ls</span>, <span class="p">cat about.txt</span>, <span class="p">keys</span>, <span class="p">unlock</span>, <span class="p">reset</span>, <span class="p">open &lt;page&gt;</span>, <span class="p">clear</span>, <span class="p">exit</span>`),
+  help: () => print(`commands: <span class="p">whoami</span>, <span class="p">about</span>, <span class="p">projects</span>, <span class="p">skills</span>, <span class="p">contact</span>, <span class="p">ls</span>, <span class="p">cat about.txt</span>, <span class="p">keys</span>, <span class="p">hint</span>, <span class="p">hint &lt;room&gt;</span>, <span class="p">unlock</span>, <span class="p">reset</span>, <span class="p">open &lt;page&gt;</span>, <span class="p">clear</span>, <span class="p">exit</span>`),
   whoami: () => print("Thong Thai. CS student at the University of Georgia, from Đà Nẵng, Vietnam. I build apps for the people around me."),
   about: () => print("Grew up in a three-generation home in Đà Nẵng. My grandmother wanted peace in the family; my father wanted to watch his children grow up. I build so I can be there for others."),
   projects: () => print(`golden-peace   wellness app for older adults in Vietnam (React Native, Expo, Supabase)\nremember-me    diary app for people living with Alzheimer’s (Flutter, Firebase)\n<span class="dim">try: open golden-peace</span>`),
@@ -341,12 +364,18 @@ const CMDS = {
   ls: () => print("about.txt  golden-peace/  remember-me/  resume.pdf  vault.lock"),
   "cat about.txt": () => CMDS.about(),
   "cat vault.lock": () => print(found.size === 5 ? "unlocked. type: unlock" : `locked. keys: ${found.size}/5`, found.size === 5 ? "ok" : "dim"),
-  keys: () => print(ROOMS.map(r => `${found.has(r.id) ? "[x]" : "[ ]"} ${r.name}`).join("\n")),
+  keys: () => print(`<b>escape room</b>  ${found.size}/5 keys\n` + ROOMS.map(r => found.has(r.id) ? `<span class="ok">[x] ${r.name}</span>` : `[ ] ${r.name}`).join("\n") +
+    `\n<span class="dim">${found.size === 5 ? "all keys found. type unlock" : "type hint for a clue about this page, or hint &lt;room&gt;"}</span>`),
+  hint: () => print(hintText(), "p"),
   unlock: () => found.size === 5
-    ? print(`ACCESS GRANTED\n\nYou found all five keys. Thank you for exploring.\nThe real secret: this whole site is built by hand, and I would love to build something with you.\nSay hi: <a href="mailto:${EMAIL}">${EMAIL}</a>`, "ok")
+    ? (print("ACCESS GRANTED. Mini me is on his way…", "ok"), setTimeout(() => { term.close(); giveCookie(); }, 700))
     : print(`ACCESS DENIED: ${found.size}/5 keys. Type <span class="p">keys</span> to see which rooms are left.`, "dim"),
   "sudo hire thong": () => print(`[sudo] password for recruiter: ********\nPermission granted. Opening email...`, "ok") || setTimeout(() => location.href = `mailto:${EMAIL}`, 900),
-  reset: () => { if (!found.size) return print("No keys to reset yet.", "dim"); print("Resetting keys...", "dim"); setTimeout(() => { term.close(); resetKeys(); }, 500); },
+  reset: () => {
+    if (!found.size) return print("No keys to reset yet.", "dim");
+    if (!resetArmed) { resetArmed = true; return print("This puts all 5 keys back in hiding. Type reset again to confirm.", "danger"); }
+    print("Resetting keys...", "danger"); setTimeout(() => { term.close(); resetKeys(); }, 500);
+  },
   clear: () => { tout.innerHTML = ""; },
   exit: () => term.close(),
 };
@@ -355,14 +384,19 @@ $(".term-in", term).addEventListener("submit", e => {
   e.preventDefault(); const raw = tin.value.trim(); tin.value = ""; if (!raw) return;
   print(`<span class="p">$</span> ${raw.replace(/</g, "&lt;")}`);
   const cmd = raw.toLowerCase();
+  if (cmd !== "reset") resetArmed = false; // confirmation only counts if typed twice in a row
+  const h = cmd.match(/^hint (.+)$/);
+  if (h) { const r = ROOMS.find(r => r.name.toLowerCase() === h[1] || r.id === h[1] || (h[1] === "golden peace" && r.id === "gp") || (h[1] === "resume" && r.id === "resume"));
+    return r ? print(hintText(r.id), "p") : print(`no room called "${h[1].replace(/</g, "&lt;")}". rooms: home, about, projects, resume, golden peace`, "dim"); }
   if (CMDS[cmd]) return CMDS[cmd]();
   const m = cmd.match(/^(open|cd) (.+)$/); if (m && PAGES[m[2]]) { print(`opening ${m[2]}...`, "dim"); return setTimeout(() => location.href = PAGES[m[2]], 500); }
   if (cmd.startsWith("sudo")) return print("nice try.", "dim");
   print(`command not found: ${raw.replace(/</g, "&lt;")}. Type <span class="p">help</span>.`, "dim");
 });
-function openTerminal() {
-  if (!tout.childElementCount) print(`Welcome to thong@danang. Type <span class="p">help</span> to start. Keys found: ${found.size}/5`, "dim");
+function openTerminal(run) {
+  if (!tout.childElementCount) print(`Welcome to thong@danang. Type <span class="p">help</span> to start.`, "dim");
   term.showModal(); tin.focus();
+  if (run) { print(`<span class="p">$</span> ${run}`); CMDS[run](); }
 }
 
 /* ---------- Command palette (Ctrl/⌘ K) ---------- */
@@ -376,7 +410,7 @@ const ITEMS = [
   { label: "Copy email address", hint: "action", run: () => navigator.clipboard?.writeText(EMAIL).then(() => toast("Email copied")) },
   { label: "GitHub", hint: "link", run: () => location.href = GITHUB },
   { label: "Open terminal", hint: "` key", run: () => openTerminal() },
-  { label: "Escape room: keys and hints", hint: "game", run: () => openRooms() },
+  { label: "Escape room: keys and hints", hint: "game", run: () => openTerminal("keys") },
 ];
 let sel = 0, shown = ITEMS;
 function renderPal() {

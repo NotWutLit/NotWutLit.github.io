@@ -777,3 +777,35 @@ section:has(> .side-photo)::after { content: ""; display: table; clear: both; } 
 /* lightbox fits the screen */
 .lightbox { max-height: 94vh; overflow: auto; }
 .lightbox img { max-height: 64vh; }
+
+/* ---------- Reward: big cookie from chibi me ---------- */
+.term-out .danger { color: #FF6B6F; }
+.term-out b { color: var(--gold); font-weight: 500; }
+.cookie-scene { width: 480px; text-align: center; padding: 1.5rem 1.75rem 1.75rem; overflow: hidden; }
+.cookie-scene h2 { margin: .5rem 0 .5rem; font-size: 2.6rem; }
+.cookie-msg { color: #D9D5CC; min-height: 3.2em; }
+.cookie-stage { position: relative; height: 300px; display: grid; place-items: end center; }
+.big-chibi { width: 150px; height: 196px; animation: rise .8s var(--ease-out) both; }
+.big-chibi svg { width: 100%; height: 100%; overflow: visible; }
+.big-chibi .arm-l, .big-chibi .arm-r { transform-box: fill-box; transform-origin: 50% 0; }
+.big-chibi .arm-l { transform: rotate(-155deg); } .big-chibi .arm-r { transform: rotate(155deg); }
+.big-chibi .p-book, .big-chibi .p-camera, .big-chibi .p-laptop, .big-chibi .p-racket { display: none; }
+.cookie { position: absolute; left: 50%; top: 4px; width: 190px; height: 190px; margin-left: -95px; z-index: 2; border: 0; padding: 0; background: none; cursor: pointer;
+  filter: drop-shadow(0 20px 30px rgba(0,0,0,.55)) drop-shadow(0 0 30px rgba(232,182,81,.35)); animation: cookie-in .9s var(--ease-out) .5s both, cookie-float 3s ease-in-out 1.4s infinite; }
+.cookie svg { width: 100%; height: 100%; }
+.cookie:disabled { cursor: default; }
+.cookie.chomp svg { animation: chomp .3s var(--ease-out); }
+.crumb { position: absolute; width: 7px; height: 7px; border-radius: 2px; background: #B47035; animation: crumb .9s ease-in forwards; pointer-events: none; }
+@keyframes rise { from { transform: translateY(120px); opacity: 0; } }
+@keyframes cookie-in { 0% { transform: scale(0) rotate(-90deg); } 70% { transform: scale(1.12) rotate(8deg); } 100% { transform: scale(1) rotate(0); } }
+@keyframes cookie-float { 50% { translate: 0 -6px; } }
+@keyframes chomp { 40% { transform: scale(.92) rotate(-4deg); } }
+@keyframes crumb { to { transform: translate(var(--dx), var(--dy)) rotate(200deg); opacity: 0; } }
+
+/* cookie held out beside chibi me, not over his face */
+.cookie-stage { height: 250px; }
+.big-chibi { translate: -78px 0; }
+.big-chibi .arm-l { transform: rotate(18deg); }
+.big-chibi .arm-r { transform: rotate(-92deg); }
+.cookie { top: auto; bottom: 46px; width: 160px; height: 160px; margin-left: -6px; }
+.cookie:focus-visible { border-radius: 50%; outline-offset: 2px; }
