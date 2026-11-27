@@ -318,7 +318,7 @@ footer p { margin: 0; }
 .now-list span { font: 12px/1.9 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 
 /* polaroid board (drag to rearrange) */
-.board { position: relative; height: 640px; margin-top: 1rem; border-radius: var(--radius); border: 1px dashed var(--border-strong);
+.board { position: relative; height: 720px; margin-top: 1rem; border-radius: var(--radius); border: 1px dashed var(--border-strong);
   background: radial-gradient(ellipse at 50% 40%, rgba(232,182,81,.06), transparent 70%); }
 .board .polaroid { position: absolute; width: 230px; cursor: grab; touch-action: none; user-select: none; }
 .board .polaroid.dragging { cursor: grabbing; box-shadow: 0 40px 70px -20px rgba(0,0,0,.9); }
@@ -474,3 +474,105 @@ dialog[open] { animation: pop .3s var(--ease-out); }
   .bubble { bottom: 70px; }
   .hero { padding-top: 3rem; }
 }
+
+/* ---------- Hobbies: each card has its own mini-Thong scene (animates only while on screen) ---------- */
+.hobbies { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.hobby { position: relative; overflow: hidden; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); padding: 1rem 1.1rem 1.25rem; transition: border-color .3s, transform .4s var(--ease-out); }
+.hobby:hover { border-color: rgba(232,182,81,.35); transform: translateY(-3px); }
+.hobby h3 { margin: .9rem 0 .35rem; font-size: 1.6rem; }
+.hobby p { margin: 0; color: #D9D5CC; font-size: 16px; line-height: 1.55; }
+.scene { display: block; width: 100%; height: auto; border-radius: 14px; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 100%, rgba(232,182,81,.12), transparent 70%), linear-gradient(#121A36, #0D1328); border: 1px solid var(--border); }
+.scene .flash, .scene .code rect, .scene .write, .scene .bits rect, .scene .notes use, .scene .bubbles circle { transform-box: fill-box; }
+
+/* badminton: swing, shuttle over the net */
+.s-badminton .swing { transform-origin: 60px 87px; transform: rotate(-30deg); }
+.s-badminton .shuttle { transform: translate(80px, 70px); }
+.playing .s-badminton .swing { animation: hb-swing 1.8s ease-in-out infinite; }
+.playing .s-badminton .shuttle { animation: hb-shuttle 1.8s linear infinite; }
+@keyframes hb-swing { 0% { transform: rotate(60deg); } 12%, 86% { transform: rotate(-30deg); } 100% { transform: rotate(60deg); } }
+@keyframes hb-shuttle { 0% { transform: translate(80px,70px) rotate(0); } 15% { transform: translate(105px,38px) rotate(20deg); } 30% { transform: translate(140px,34px) rotate(60deg); } 50% { transform: translate(182px,96px) rotate(180deg); } 70% { transform: translate(140px,34px) rotate(200deg); } 85% { transform: translate(105px,38px) rotate(260deg); } 100% { transform: translate(80px,70px) rotate(360deg); } }
+/* puzzles: cube layer turns, padlock pops */
+.playing .s-puzzles .twist { animation: hb-twist 4s ease-in-out infinite; }
+.playing .s-puzzles .shackle { animation: hb-lock 4s var(--ease-out) infinite; }
+@keyframes hb-twist { 0%, 18% { transform: translateX(0); } 25%, 43% { transform: translateX(-7.3px); } 50%, 68% { transform: translateX(-14.6px); } 75%, 95% { transform: translateX(-21.9px); } 100% { transform: translateX(0); } }
+@keyframes hb-lock { 0%, 55% { transform: translateY(0); } 65%, 90% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+/* gaming: pickaxe, block shakes, bits fly */
+.s-gaming .chop { transform-origin: 70px 87px; transform: rotate(-45deg); }
+.s-gaming .crack, .s-gaming .bits { opacity: 0; }
+.playing .s-gaming .chop { animation: hb-chop 1.2s ease-in infinite; }
+.playing .s-gaming .block { animation: hb-shake 1.2s infinite; }
+.playing .s-gaming .crack { animation: hb-crack 3.6s steps(1) infinite; }
+.playing .s-gaming .bits { animation: hb-bits 1.2s ease-out infinite; }
+@keyframes hb-chop { 0%, 100% { transform: rotate(-45deg); } 30% { transform: rotate(25deg); } }
+@keyframes hb-shake { 30% { transform: translate(1.5px, -1px); } 36% { transform: translate(-1.5px, 1px); } 42% { transform: none; } }
+@keyframes hb-crack { 0% { opacity: 0; } 33% { opacity: .5; } 66% { opacity: 1; } }
+@keyframes hb-bits { 0%, 28% { opacity: 0; transform: none; } 35% { opacity: 1; } 100% { opacity: 0; transform: translate(-14px, -18px); } }
+/* software: code types itself, hands tap, coffee steams */
+.s-software .code rect { transform-origin: left center; }
+.playing .s-software .code rect { animation: hb-code 4.5s var(--ease-out) infinite; }
+.playing .s-software .code rect:nth-child(2) { animation-delay: .5s; }
+.playing .s-software .code rect:nth-child(3) { animation-delay: 1s; }
+.playing .s-software .code rect:nth-child(4) { animation-delay: 1.5s; }
+.playing .s-software .code rect:nth-child(5) { animation-delay: 2s; }
+.playing .s-software .type-l { animation: hb-tap .22s ease-in-out infinite alternate; }
+.playing .s-software .type-r { animation: hb-tap .22s ease-in-out .11s infinite alternate; }
+.playing .s-software .steam { animation: hb-steam 2.4s ease-out infinite; }
+@keyframes hb-code { 0% { transform: scaleX(0); } 20%, 85% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+@keyframes hb-tap { to { transform: translateY(-2.5px); } }
+@keyframes hb-steam { 0% { opacity: 0; transform: translateY(4px); } 40% { opacity: .9; } 100% { opacity: 0; transform: translateY(-6px); } }
+/* teaching: the board writes itself, pointer taps */
+.s-teaching .write { transform-origin: left center; }
+.s-teaching .point { transform-origin: 56px 87px; }
+.playing .s-teaching .write { animation: hb-write 4s ease-out infinite; }
+.playing .s-teaching .point { animation: hb-point 1s ease-in-out infinite alternate; }
+@keyframes hb-write { 0% { transform: scaleX(0); } 45%, 90% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+@keyframes hb-point { to { transform: rotate(-8deg); } }
+/* culture: head bob, notes float, ball bounces */
+.playing .s-culture .bop { animation: hb-bop .45s ease-in-out infinite alternate; }
+.playing .s-culture .notes use { animation: hb-note 2.4s ease-out infinite; }
+.playing .s-culture .notes .n2 { animation-delay: .8s; }
+.playing .s-culture .notes .n3 { animation-delay: 1.6s; }
+.playing .s-culture .ball { animation: hb-ball .7s cubic-bezier(.5,0,.5,1) infinite alternate; }
+@keyframes hb-bop { to { transform: translateY(-3px); } }
+@keyframes hb-note { 0% { opacity: 0; transform: translateY(6px); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(6px, -26px); } }
+@keyframes hb-ball { from { transform: translateY(-30px); } to { transform: translateY(0); } }
+/* swimming: strokes, waves, bubbles */
+.s-swimming .stroke-a { transform-origin: 86px 98px; }
+.s-swimming .stroke-b { transform-origin: 114px 98px; }
+.playing .s-swimming .stroke-a { animation: hb-stroke 1.6s linear infinite; }
+.playing .s-swimming .stroke-b { animation: hb-stroke 1.6s linear -.8s infinite; }
+.playing .s-swimming .swimmer { animation: hb-bop .8s ease-in-out infinite alternate; }
+.playing .s-swimming .w1 { animation: hb-wave 2s linear infinite; }
+.playing .s-swimming .w2 { animation: hb-wave 3s linear infinite reverse; }
+.playing .s-swimming .bubbles circle { animation: hb-bubble 2.2s ease-out infinite; }
+.playing .s-swimming .bubbles circle:nth-child(2) { animation-delay: .7s; }
+.playing .s-swimming .bubbles circle:nth-child(3) { animation-delay: 1.4s; }
+@keyframes hb-stroke { to { transform: rotate(360deg); } }
+@keyframes hb-wave { to { transform: translateX(40px); } }
+@keyframes hb-bubble { 0% { opacity: 0; transform: none; } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-22px); } }
+/* photography: flash, print slides out */
+.s-photo .flash { opacity: 0; transform-origin: center; }
+.s-photo .print { opacity: 0; }
+.playing .s-photo .flash { animation: hb-flash 3s ease-out infinite; }
+.playing .s-photo .print { animation: hb-print 3s var(--ease-out) infinite; }
+@keyframes hb-flash { 0%, 8% { opacity: 0; transform: scale(.4); } 12% { opacity: 1; transform: scale(1.3); } 22%, 100% { opacity: 0; transform: scale(.6); } }
+@keyframes hb-print { 0%, 14% { opacity: 0; transform: translateX(-30px); } 30%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(6px); } }
+/* reduced motion: show each scene's finished state */
+@media (prefers-reduced-motion: reduce) { .s-photo .print { opacity: 1; } .s-gaming .crack { opacity: 1; } }
+
+/* ---------- Running chibi: poses and props by section ---------- */
+.chibi .p-laptop, .chibi .p-camera, .chibi .p-racket { display: none; }
+.chibi.act-laptop .p-laptop, .chibi.act-camera .p-camera, .chibi.act-racket .p-racket { display: inline; }
+.chibi.act-wave .arm-r { animation: c-wave .45s ease-in-out infinite alternate; }
+.chibi.act-laptop .arm-l { transform: rotate(-38deg); }
+.chibi.act-laptop .arm-r { transform: rotate(38deg); }
+.chibi.act-laptop .p-laptop .scr { animation: c-glow 1.2s ease-in-out infinite alternate; }
+.chibi.act-camera .arm-l { transform: rotate(-150deg); }
+.chibi.act-camera .arm-r { transform: rotate(150deg); }
+.chibi.act-camera .flash { animation: hb-flash 2.6s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+.chibi .flash { opacity: 0; }
+.chibi.act-racket .arm-r { animation: c-racket 1.1s ease-in-out infinite; }
+@keyframes c-wave { from { transform: rotate(-165deg); } to { transform: rotate(-125deg); } }
+@keyframes c-glow { to { opacity: .6; } }
+@keyframes c-racket { 0%, 100% { transform: rotate(-20deg); } 20% { transform: rotate(-150deg); } 35% { transform: rotate(40deg); } }

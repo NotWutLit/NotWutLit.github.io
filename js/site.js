@@ -353,13 +353,16 @@ if (shots.length) {
 }
 
 /* =========================================================
-   Chibi Thong: runs along the bottom, gives hints when clicked
+   Chibi Thong: runs to a spot, stops, and does whatever the
+   section on screen is about (data-chibi="wave|laptop|camera|racket").
+   Click him for a hint about this page's key.
    ========================================================= */
 const CHIBI = `<svg viewBox="0 0 64 84" aria-hidden="true"><g class="bodyg">
   <g class="leg-l"><rect x="23" y="58" width="8" height="17" rx="3.5" fill="#1C1D26"/><rect x="20" y="72" width="13" height="7" rx="3.5" fill="#F2F0EA"/></g>
   <g class="leg-r"><rect x="33" y="58" width="8" height="17" rx="3.5" fill="#1C1D26"/><rect x="31" y="72" width="13" height="7" rx="3.5" fill="#F2F0EA"/></g>
   <g class="arm-l"><rect x="13" y="43" width="7" height="15" rx="3.5" fill="#F4F1EA"/><circle cx="16.5" cy="58.5" r="3.4" fill="#F1CBA8"/></g>
-  <g class="arm-r"><rect x="44" y="43" width="7" height="15" rx="3.5" fill="#F4F1EA"/><circle cx="47.5" cy="58.5" r="3.4" fill="#F1CBA8"/></g>
+  <g class="arm-r"><rect x="44" y="43" width="7" height="15" rx="3.5" fill="#F4F1EA"/><circle cx="47.5" cy="58.5" r="3.4" fill="#F1CBA8"/>
+    <g class="p-racket"><line x1="47.5" y1="60" x2="49" y2="72" stroke="#ECE8DF" stroke-width="1.6"/><ellipse cx="49.5" cy="78" rx="4.5" ry="6" fill="rgba(232,182,81,.2)" stroke="#E8B651" stroke-width="1.6"/></g></g>
   <rect x="19" y="40" width="26" height="22" rx="8" fill="#F4F1EA"/>
   <path d="M19 48q0-8 8-8h2l3 9 3-9h2q8 0 8 8v10q0 4-4 4H23q-4 0-4-4z" fill="#28314F"/>
   <circle cx="32" cy="23" r="17" fill="#F3CFAE"/>
@@ -369,26 +372,47 @@ const CHIBI = `<svg viewBox="0 0 64 84" aria-hidden="true"><g class="bodyg">
   <circle cx="25.5" cy="26.5" r="1.7" fill="#141319"/><circle cx="38.5" cy="26.5" r="1.7" fill="#141319"/>
   <ellipse cx="21" cy="32" rx="2.6" ry="1.5" fill="#EFA59A" opacity=".55"/><ellipse cx="43" cy="32" rx="2.6" ry="1.5" fill="#EFA59A" opacity=".55"/>
   <path d="M29 33q3 2.6 6 0" fill="none" stroke="#141319" stroke-width="1.5" stroke-linecap="round"/>
+  <g class="p-camera"><rect x="20" y="19" width="24" height="15" rx="3" fill="#1C1D26"/><rect x="23" y="16" width="7" height="4" rx="1" fill="#1C1D26"/><circle cx="32" cy="26.5" r="5" fill="#3A4466" stroke="#E8B651" stroke-width="1.4"/><path class="flash" d="M40 10l2-5 2 5 5 2-5 2-2 5-2-5-5-2z" fill="#fff"/></g>
+  <g class="p-laptop"><path d="M14 66h36l4 5H10z" fill="#9AA3BF"/><rect class="scr" x="17" y="50" width="30" height="16" rx="2" fill="#1B2340" stroke="#6FA8FF" stroke-width="1.2"/></g>
 </g></svg>`;
 const chibi = document.createElement("button");
 chibi.className = "chibi"; chibi.type = "button"; chibi.innerHTML = CHIBI; chibi.setAttribute("aria-label", "Mini Thong: get a hint for this room");
 const bubble = document.createElement("div"); bubble.className = "bubble"; bubble.hidden = true; bubble.setAttribute("role", "status");
 document.body.append(chibi, bubble);
-let cx = -90, dir = 1, running = false, paused = false, rafC = 0, bubbleT;
+
+let cx = -90, running = false, paused = false, act = document.body.dataset.chibi || "wave", bubbleT;
 const setX = x => { cx = x; chibi.style.setProperty("--cx", x + "px"); };
-function run() {
-  if (reduce || running || document.hidden) return;
-  running = true; chibi.classList.add("running"); chibi.classList.toggle("flip", dir < 0);
-  setX(dir > 0 ? -90 : innerWidth + 20);
+const ACTS = ["wave", "laptop", "camera", "racket"];
+function showAct() { ACTS.forEach(a => chibi.classList.toggle("act-" + a, !running && a === act)); }
+
+// which section is on screen decides what he does
+const watched = $$("[data-chibi]"), ratios = new Map();
+if (watched.length) {
+  const so = new IntersectionObserver(es => {
+    es.forEach(e => ratios.set(e.target, e.intersectionRatio));
+    let best = null, r = 0; ratios.forEach((v, el) => { if (v > r) { r = v; best = el; } });
+    if (best && best.dataset.chibi !== act) { act = best.dataset.chibi; showAct(); }
+  }, { threshold: [0, .15, .3, .5, .75] });
+  watched.forEach(el => so.observe(el));
+}
+
+function goTo(target) {
+  if (reduce || running) return;
+  running = true; showAct();
+  const dir = Math.sign(target - cx) || 1;
+  chibi.classList.add("running"); chibi.classList.toggle("flip", dir < 0);
   let last = performance.now();
   const frame = now => {
     const dt = Math.min(now - last, 50); last = now;
-    if (!paused) setX(cx + dir * dt * .16);
-    if ((dir > 0 && cx > innerWidth + 20) || (dir < 0 && cx < -90)) { running = false; chibi.classList.remove("running"); dir *= -1; return; }
-    rafC = requestAnimationFrame(frame);
+    if (!paused) setX(cx + dir * dt * .17);
+    if ((dir > 0 && cx >= target) || (dir < 0 && cx <= target)) {
+      setX(target); running = false; chibi.classList.remove("running", "flip"); showAct(); return;
+    }
+    requestAnimationFrame(frame);
   };
-  rafC = requestAnimationFrame(frame);
+  requestAnimationFrame(frame);
 }
+const randomSpot = () => 16 + Math.random() * Math.max(innerWidth - 112, 40);
 function say(text) {
   bubble.textContent = text; bubble.hidden = false;
   bubble.style.left = Math.min(Math.max(cx + 32, 140), innerWidth - 140) + "px";
@@ -397,11 +421,20 @@ function say(text) {
 chibi.addEventListener("click", () => { paused = true; chibi.classList.remove("running"); say(hintText()); });
 function chibiCheer() {
   if (reduce) return;
-  if (!running) { setX(Math.min(innerWidth - 80, 24)); }
   chibi.classList.add("cheer"); setTimeout(() => chibi.classList.remove("cheer"), 1400);
 }
-if (reduce) setX(12); // stands still in the corner, still clickable
-else { setTimeout(run, 2500); setInterval(run, 26000); }
+if (reduce) { setX(12); showAct(); } // stands still in the corner with his prop; still clickable
+else {
+  setTimeout(() => goTo(Math.min(innerWidth * .18, 220)), 2200);
+  setInterval(() => { if (!paused && !document.hidden) goTo(randomSpot()); }, 14000);
+}
+
+/* ---------- Hobby scenes play only while visible ---------- */
+const scenes = $$('.hobby');
+if (scenes.length && !reduce) {
+  const so2 = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('playing', e.isIntersecting)), { rootMargin: '50px' });
+  scenes.forEach(h => so2.observe(h));
+}
 
 /* ---------- Home: 3D city of lights (loaded only where it exists) ---------- */
 if ($("#city")) {
