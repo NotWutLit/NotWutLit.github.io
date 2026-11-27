@@ -1201,3 +1201,94 @@ function aboutScene(el, build, image) {
   frames.forEach(frame => observer.observe(frame));
   addEventListener("scroll", request, { passive: true }); addEventListener("resize", request); addEventListener("motionchange", request); update();
 })();
+
+/* ---------- Motion: golden sunrise ---------- */
+// The existing phone visibility observer pauses these CSS particles without another canvas.
+
+/* ---------- Motion: golden gallery ---------- */
+(() => {
+  if (page !== "gp") return;
+  const screens = $$(".gp-screen"), visible = new Set(); let raf = 0;
+  screens.forEach((screen, i) => aboutScene(screen, light => [screen.animate([
+    { transform: `translateY(${light ? 8 : i % 2 ? 38 : 24}px)`, opacity: 0 },
+    { transform: "translateY(0)", opacity: 1 }
+  ], { duration: light ? 420 : 800, delay: i * (light ? 40 : 100), easing: "cubic-bezier(.16,1,.3,1)", fill: "both" })], $("img", screen)));
+  const update = () => {
+    raf = 0; if (document.hidden) return;
+    screens.forEach((screen, i) => {
+      if (!motionOK()) screen.style.setProperty("--gp-drift", "0px");
+      else if (visible.has(screen)) {
+        const r = screen.getBoundingClientRect(), light = innerWidth < 600 || !finePointer;
+        const p = Math.max(-1, Math.min(1, (innerHeight / 2 - r.top - r.height / 2) / innerHeight));
+        screen.style.setProperty("--gp-drift", `${(p * (light ? 2 : i % 2 ? 6 : 10)).toFixed(2)}px`);
+      }
+    });
+  };
+  const request = () => { if (!raf && !document.hidden && (visible.size || !motionOK())) raf = requestAnimationFrame(update); };
+  const observer = new IntersectionObserver(entries => { entries.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)); request(); });
+  screens.forEach(screen => observer.observe(screen));
+  addEventListener("scroll", request, { passive: true }); addEventListener("resize", request); addEventListener("motionchange", request);
+})();
+
+/* ---------- Motion: golden design ---------- */
+(() => {
+  const scene = $(".gp-design-scene"); if (!scene) return;
+  aboutScene(scene, light => {
+    const options = { duration: light ? 500 : 1000, easing: "ease-out", fill: "both" };
+    // The busy screen briefly compresses, then remains intact as the static before reference.
+    const clutter = $$(".gp-clutter", scene).map((group, i) => group.animate([
+      { transform: "none", opacity: 1 },
+      { transform: `translate(${light ? 1 : i % 2 ? -3 : 3}px, 2px) scale(.94)`, opacity: .45, offset: .4 },
+      { transform: "none", opacity: 1 }
+    ], { ...options, delay: i * 70 }));
+    const arrow = $(".gp-design-arrow", scene).animate([
+      { transform: "scale(1)", opacity: .5 }, { transform: `scale(${light ? 1.03 : 1.1})`, opacity: 1 }, { transform: "scale(1)", opacity: 1 }
+    ], { ...options, delay: light ? 150 : 350 });
+    const choices = $$(".gp-choice", scene).map((button, i) => button.animate([
+      { transform: `translateY(${light ? 3 : 8}px) scale(.94)`, opacity: 0 },
+      { transform: "translateY(0) scale(1)", opacity: 1 }
+    ], { ...options, duration: light ? 280 : 450, delay: (light ? 300 : 650) + i * (light ? 130 : 230) }));
+    return [...clutter, arrow, ...choices];
+  });
+})();
+
+/* ---------- Motion: golden elder ---------- */
+(() => {
+  const scene = $(".gp-elder-scene"); if (!scene) return;
+  aboutScene(scene, light => {
+    const lights = $$(".gp-button-light", scene).map((button, i) => button.animate([
+      { opacity: 0 }, { opacity: .4 }, { opacity: 0 }
+    ], { duration: light ? 400 : 650, delay: i * (light ? 200 : 350), easing: "ease-in-out", fill: "both" }));
+    const glint = $(".gp-glasses-glint", scene).animate([
+      { transform: "translate(-2px, 1px)", opacity: 0 }, { transform: "translate(0, 0)", opacity: .9 }, { transform: "translate(2px, -1px)", opacity: 0 }
+    ], { duration: light ? 400 : 700, delay: light ? 650 : 1100, easing: "ease-in-out", fill: "both" });
+    return [...lights, glint];
+  });
+})();
+
+/* ---------- Motion: golden demo ---------- */
+(() => {
+  const img = $("#demo-img"), btn = $("#demo-btn"), status = $("#demo-status"), frame = $(".gp-demo-frame");
+  if (!img || !btn || !frame) return;
+  const still = { src: img.getAttribute("src"), alt: img.alt };
+  const gif = { src: "assets/img/gp-demo.gif", alt: "Animated demo of Golden Peace: welcome, log in, sign up, profile setup, home, relax, health and playlist screens." };
+  let requested = false, active = false, visible = false;
+  const sync = () => {
+    if (!motionOK()) requested = false;
+    btn.textContent = requested ? "Stop demo" : "Play demo";
+    const play = requested && visible && motionOK() && !document.hidden;
+    if (play === active) return;
+    active = play; img.onload = img.onerror = null; frame.classList.remove("gp-demo-playing");
+    // GIFs cannot pause natively, so restore the still outside view and when motion is disabled.
+    if (!play) { img.src = still.src; img.alt = still.alt; status.textContent = ""; return; }
+    status.textContent = "Loading the demo…";
+    img.onload = () => { status.textContent = ""; frame.classList.add("gp-demo-playing"); };
+    img.onerror = () => { setDemo(false); status.innerHTML = 'The demo couldn’t load. Try again, or <a href="https://github.com/NotWutLit/golden-peace-app">watch it on GitHub</a>.'; };
+    img.loading = "eager"; img.src = gif.src; img.alt = gif.alt;
+  };
+  const setDemo = play => { requested = play; status.textContent = ""; sync(); };
+  btn.addEventListener("click", () => setDemo(!requested));
+  $$('a[href="#demo"]').forEach(a => a.addEventListener("click", () => { setDemo(true); setTimeout(() => btn.focus(), 0); }));
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; frame.classList.toggle("motion-offscreen", !visible); sync(); }).observe(frame);
+  addEventListener("motionchange", sync); addEventListener("beforeprint", () => setDemo(false));
+})();

@@ -1238,3 +1238,67 @@ html.motion-paused .letter-ink path { transform: none; }
   .tag-label, .term-code > pre { opacity: 1 !important; }
   .letter-ink path { transform: none !important; }
 }
+
+/* ---------- Motion: golden sunrise ---------- */
+.gp-hero .phone3d { isolation: isolate; }
+.gp-hero .phone3d::before { width: 100%; background: radial-gradient(circle, rgba(232,182,81,.24), rgba(232,182,81,.06) 40%, transparent 68%); animation: gp-sunrise-glow 7s ease-in-out infinite; }
+.gp-sunrise { position: absolute; inset: 4% 0; overflow: hidden; z-index: -1; pointer-events: none; }
+.gp-sunrise i { position: absolute; bottom: 8%; left: 14%; width: 3px; height: 3px; border-radius: 50%; background: var(--gold-soft); box-shadow: 0 0 9px var(--gold-glow); opacity: 0; animation: gp-sunrise-rise 11s linear -2s infinite; }
+.gp-sunrise i:nth-child(2) { left: 26%; animation-delay: -7s; animation-duration: 14s; }
+.gp-sunrise i:nth-child(3) { left: 42%; animation-delay: -11s; animation-duration: 16s; }
+.gp-sunrise i:nth-child(4) { left: 61%; animation-delay: -5s; animation-duration: 13s; }
+.gp-sunrise i:nth-child(5) { left: 77%; animation-delay: -9s; animation-duration: 15s; }
+.gp-sunrise i:nth-child(6) { left: 88%; animation-delay: -1s; animation-duration: 12s; }
+@keyframes gp-sunrise-glow { 0%, 100% { transform: scale(.96); opacity: .65; } 50% { transform: scale(1.04); opacity: .95; } }
+@keyframes gp-sunrise-rise { 0% { transform: translate(0, 0); opacity: 0; } 20% { opacity: .6; } 80% { opacity: .35; } 100% { transform: translate(8px, -310px); opacity: 0; } }
+@media (max-width: 599px), (pointer: coarse) {
+  .gp-sunrise i:nth-child(n+4) { display: none; }
+  .gp-sunrise i { animation-name: gp-sunrise-rise-light; }
+  .gp-hero .phone3d::before { animation: none; opacity: .75; }
+}
+@keyframes gp-sunrise-rise-light { 0% { transform: translateY(0); opacity: 0; } 25%, 70% { opacity: .35; } 100% { transform: translateY(-140px); opacity: 0; } }
+
+/* ---------- Motion: golden gallery ---------- */
+/* Only screens travel; overriding the inherited figure reveal keeps captions still. */
+html.js body[data-page="gp"] .gallery figure[data-reveal] { opacity: 1; transform: none; filter: none; animation: none; transition: none; }
+.gp-screen { padding-block: 0 18px; }
+.gallery figure:nth-child(even) .gp-screen { padding-block: 18px 0; }
+.gp-screen.scene-pending { opacity: 0; }
+.gp-screen .enlarge { transform: translateY(var(--gp-drift, 0px)); }
+@media (max-width: 599px), (pointer: coarse) {
+  .gp-screen, .gallery figure:nth-child(even) .gp-screen { padding-block: 0; }
+}
+
+/* ---------- Motion: golden design ---------- */
+.gp-design-scene { animation: none; }
+.gp-clutter, .gp-design-arrow, .gp-choice { transform-box: fill-box; transform-origin: center; }
+.gp-design-scene.scene-pending .gp-choice { opacity: 0; }
+
+/* ---------- Motion: golden elder ---------- */
+.gp-elder-scene { animation: none; }
+.gp-button-light, .gp-glasses-glint { opacity: 0; pointer-events: none; }
+
+/* ---------- Motion: golden demo ---------- */
+.gp-demo-frame { position: relative; isolation: isolate; width: min(280px, 100%); margin-inline: auto; }
+.gp-demo-frame::before { content: ""; position: absolute; inset: -9px; border: 1px solid var(--gold); border-radius: 32px; box-shadow: 0 0 30px rgba(232,182,81,.22); opacity: 0; z-index: -1; pointer-events: none; }
+.gp-demo-playing::before { animation: gp-demo-breathe 4.5s ease-in-out infinite; }
+@keyframes gp-demo-breathe { 0%, 100% { transform: scale(1); opacity: .28; } 50% { transform: scale(var(--gp-ring-scale, 1.025)); opacity: .65; } }
+@media (max-width: 599px), (pointer: coarse) { .gp-demo-frame { --gp-ring-scale: 1.008; } }
+@media (max-width: 559px) { .gp-demo-frame { width: min(240px, 100%); } }
+
+/* ---------- Motion: golden static and print ---------- */
+html.motion-paused .gp-sunrise, html.motion-paused .gp-demo-frame::before { display: none; }
+html.motion-paused .gp-hero .phone3d::before { transform: none; opacity: .75; }
+html.motion-paused .gp-screen, html.motion-paused .gp-screen .enlarge { opacity: 1; transform: none; }
+html.motion-paused .gp-screen img { transform: none; }
+html.motion-paused .gp-design-scene .gp-choice { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .gp-sunrise, .gp-demo-frame::before { display: none; }
+  .gp-hero .phone3d::before { animation: none; transform: none; opacity: .75; }
+  .gp-screen, .gp-screen .enlarge, .gp-screen img { opacity: 1; transform: none !important; }
+  .gp-design-scene .gp-choice { opacity: 1; }
+}
+@media print {
+  .gp-sunrise, .gp-hero .phone3d::before, .gp-demo-frame::before { display: none; }
+  .gp-screen, .gp-screen .enlarge { opacity: 1 !important; transform: none !important; }
+}
