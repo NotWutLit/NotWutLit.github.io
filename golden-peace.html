@@ -7,12 +7,12 @@
   <meta name="description" content="Golden Peace: a calm, easy-to-read wellness app for older adults in Vietnam. Who it’s for, what we built, and what I learned designing for other people.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/site.js" defer></script>
 </head>
-<body>
+<body data-page="gp" data-chibi="wave">
   <a class="skip-link" href="#main-content">Skip to content</a>
   <header>
     <div class="wide">
@@ -30,12 +30,14 @@
 
   <main id="main-content" tabindex="-1">
     <!-- 1. Hero -->
-    <div class="wrap">
-      <section class="feature" aria-labelledby="title">
-        <img class="vt-gp" src="assets/img/gp-welcome.png" width="400" height="867"
-             alt="Golden Peace welcome screen: an older couple smiling together, the app name 'An Tâm Tuổi Vàng' and the line 'Sống vui, sống khỏe mỗi ngày' (Live happily, live healthily every day) in large white text, and one 'Continue' button.">
-        <div>
-          <h1 id="title">Golden Peace</h1>
+    <div class="wide">
+      <section class="gp-hero" data-chibi="wave" aria-labelledby="title">
+        <div class="phone3d" data-tilt="8">
+          <img class="vt-gp" src="assets/img/gp-welcome.png" width="400" height="867"
+               alt="Golden Peace welcome screen: an older couple smiling together, the app name 'An Tâm Tuổi Vàng' and the line 'Sống vui, sống khỏe mỗi ngày' (Live happily, live healthily every day) in large white text, and one 'Continue' button.">
+        </div>
+        <div class="gp-intro">
+          <h1 id="title">Golden <em>Peace</em></h1>
           <p class="lead"><em>An Tâm Tuổi Vàng</em>, or "peace of mind in the golden years": a mobile app that helps older adults in Vietnam track their emotions, relax with music and meditation, and keep healthy daily habits.</p>
           <dl class="facts">
             <div><dt>Role</dt><dd>Owner &amp; software developer</dd></div>
@@ -49,25 +51,37 @@
           <p class="jump"><a href="#reflection">Jump to what I learned</a> · <a href="https://github.com/NotWutLit/golden-peace-app">View code on GitHub</a></p>
         </div>
       </section>
+    </div>
 
+    <div class="wrap">
       <!-- 2. Who it’s for -->
-      <h2>Who it’s for</h2>
+      <section data-chibi="read" aria-labelledby="who">
+      <h2 id="who">Who it’s for</h2>
       <p>Golden Peace is for people aged 60 and over, and for the family members and caregivers who want to support them. Many older adults feel lonely or anxious but don’t have an easy way to notice how their mood changes or to find calming, healthy activities. Most apps aren’t made for them: the text is small, the screens are crowded, and it isn’t clear what to tap next.</p>
       <p>During our research, we found that older adults often struggled to use buttons and complete complex tasks. That made ease of use a central concern: someone should be able to find an activity and understand what to do next without working through a complicated sequence of screens.</p>
       <p>We wanted to make a safe, positive place where older adults can share how they feel, find health information, and take part in activities that are good for them, all in one app, with large text and simple screens. The app is built with React Native (Expo) and uses Supabase for accounts and data.</p>
 
+      </section>
+
       <!-- 4. My role -->
-      <h2>My role</h2>
+      <section data-chibi="laptop" aria-labelledby="role">
+      <h2 id="role">My role</h2>
       <p>I’m the project’s owner and a software developer. I founded the team, four members from the AgeWell Tech Solutions Club, and ran our development in weekly sprint reviews. To decide what to build, we did on-site research, surveys and interviews with more than 120 older adults and healthcare staff at 4 senior care centers in Hanoi and Đà Nẵng. I designed the high-accessibility prototypes in Figma, and we completed the core modules for messaging, daily suggestions and personal activity recommendations.</p>
       <p>Golden Peace is a team effort. My contribution connects the research and interface design with the development work: turning what we learned about older adults’ needs into screens and tasks we could build together.</p>
 
+      </section>
+
       <!-- 5. From research to design -->
-      <h2>From research to design</h2>
+      <section data-chibi="read" aria-labelledby="research">
+      <h2 id="research">From research to design</h2>
       <p class="anchor">120+ older adults and care staff · 4 senior care centers · Hanoi and Đà Nẵng</p>
       <p>The difficulty older adults had with buttons and complex tasks gave us a practical design priority: make each action easy to find and keep the path to it short. The interface uses large text, wide buttons and a small set of clearly labeled choices. Profile setup asks for a name and an optional photo, with a way to skip it, while the Relax screen groups activities into four large tiles. To evaluate these choices, I’d ask users to sign in, find a song and complete a daily check-in, then watch where they hesitate or need help.</p>
 
+      </section>
+
       <!-- 6. Gallery -->
-      <h2>A closer look</h2>
+      <section data-chibi="camera" aria-labelledby="closer">
+      <h2 id="closer">A closer look</h2>
       <p class="hint">Select a screen to see it full size.</p>
       <div class="gallery">
         <figure>
@@ -91,19 +105,21 @@
           <figcaption><strong>Daily habits.</strong> A short checklist of small, achievable goals: breathe for 5 minutes, drink water, walk for 15 minutes, listen to music, and call someone you love.</figcaption>
         </figure>
       </div>
+      </section>
 
       <!-- 7. Demo: plays only when asked, since moving images can be hard for some visitors -->
-      <section class="demo" id="demo" aria-labelledby="demo-title">
+      <section class="demo" id="demo" data-chibi="laptop" aria-labelledby="demo-title">
         <h2 id="demo-title">Demo</h2>
         <p>A walk through the app, from the welcome screen to playing music.</p>
         <div class="actions"><button class="btn" id="demo-btn" type="button">Play demo</button></div>
         <img id="demo-img" class="phone" src="assets/img/gp-playlist.png" width="400" height="867" loading="lazy"
              alt="Still frame from the demo: the 'Nhạc hay mỗi ngày' (Good music every day) playlist screen. Press Play demo to watch.">
         <p id="demo-status" class="status" role="status"></p>
+        <button class="key key-inline key-big" type="button" data-key="gp" hidden></button>
       </section>
 
       <!-- Reflection connects the family story with designing and revising for an audience. -->
-      <section class="reflection" id="reflection" aria-labelledby="reflection-title">
+      <section class="reflection" id="reflection" data-chibi="read" aria-labelledby="reflection-title">
         <h2 id="reflection-title">What I learned designing for other people</h2>
         <p class="opening">My father said wealth and status meant little compared with watching his children grow up.</p>
         <p>When I interviewed him, I began to understand what being there for someone could mean. I carried that question into Golden Peace. During our research, older adults struggled with buttons and complex tasks. A feature could sound useful to our team and still ask too much of the person trying to use it. Large controls, short setup and clear choices became ways to take that difficulty seriously.</p>
@@ -122,7 +138,7 @@
         <li><a href="mailto:thong11042008@gmail.com">Email</a></li>
         <li><a href="https://github.com/NotWutLit">GitHub</a></li>
       </ul>
-      <p>Last updated November 2026</p>
+      <p>Built by hand. No frameworks.</p>
     </div>
   </footer>
 
