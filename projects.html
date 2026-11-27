@@ -7,12 +7,12 @@
   <meta name="description" content="Apps and projects by Thong Thai.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/site.js" defer></script>
 </head>
-<body>
+<body data-page="projects" data-chibi="laptop">
   <a class="skip-link" href="#main-content">Skip to content</a>
   <header>
     <div class="wide">
@@ -30,45 +30,76 @@
 
   <main id="main-content" tabindex="-1">
     <div class="wide">
-      <h1>Projects</h1>
-      <p class="tagline">Things I’ve built, and what I did on each one.</p>
+      <section class="page-head" data-chibi="wave" aria-labelledby="projects-title">
+        <h1 id="projects-title">My <em>projects</em></h1>
+        <p class="tagline">Things I’ve built, and what I did on each one.</p>
+      </section>
 
-      <div class="cards">
-        <article class="card">
-          <div class="thumb"><img src="assets/img/gp-cover.jpg" width="1000" height="625" alt="Three Golden Peace screens side by side: the Relax tab with large photo tiles, the home screen with a big ‘Xin chào!’ greeting, and the daily health checklist."></div>
-          <div class="body">
-            <h2>Golden Peace</h2>
-            <p>A mobile app for older adults in Vietnam to track emotions, relax with music and meditation, and keep healthy daily habits.</p>
-            <p><strong>My contribution:</strong> I founded and led the 4-person team, ran research with 120+ older adults and care staff at 4 senior care centers, and designed the accessible UI in Figma.</p>
-            <ul class="tags" aria-label="Technologies">
-              <li>React Native</li><li>Expo</li><li>TypeScript</li><li>Supabase</li><li>Figma</li>
-            </ul>
-            <div class="links">
-              <a href="golden-peace.html">Case study</a>
-              <a href="https://github.com/NotWutLit/golden-peace-app">Code on GitHub</a>
-            </div>
+      <article class="showcase" data-chibi="laptop" aria-labelledby="gp-title">
+        <div class="media spot" data-tilt="3">
+          <img class="vt-gp" src="assets/img/gp-cover.jpg" width="1000" height="625" alt="Three Golden Peace screens side by side: the Relax tab with large photo tiles, the home screen with a big ‘Xin chào!’ greeting, and the daily health checklist.">
+          <button class="key dim" type="button" data-key="projects" style="right:14px;bottom:14px"></button>
+        </div>
+        <div class="info">
+          <h2 id="gp-title">Golden Peace</h2>
+          <p>A mobile app for older adults in Vietnam to track emotions, relax with music and meditation, and keep healthy daily habits.</p>
+          <p><strong>My contribution:</strong> I founded and led the 4-person team, ran research with 120+ older adults and care staff at 4 senior care centers, and designed the accessible UI in Figma.</p>
+          <dl class="facts">
+            <div><dt>Role</dt><dd>Owner &amp; developer</dd></div>
+            <div><dt>Team</dt><dd>4 students</dd></div>
+            <div><dt>Timeline</dt><dd>May 2025 – now</dd></div>
+          </dl>
+          <ul class="tags" aria-label="Technologies"><li>React Native</li><li>Expo</li><li>TypeScript</li><li>Supabase</li><li>Figma</li></ul>
+          <div class="actions">
+            <a class="btn" href="golden-peace.html">Read the case study <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="btn ghost" href="https://github.com/NotWutLit/golden-peace-app">Code on GitHub</a>
           </div>
-        </article>
+        </div>
+      </article>
 
-        <article class="card">
+      <article class="showcase flip-side" data-chibi="read" aria-labelledby="rm-title">
+        <div class="media spot" data-tilt="3">
           <!-- Illustration of the app's idea (the repo has no screenshots yet). Swap in a real screenshot when you have one. -->
-          <div class="thumb"><img src="assets/img/rm-cover.png" width="1000" height="625" loading="lazy"
-               alt="Illustration of a Remember Me entry: a letter that begins 'Dear Grandma,' with a photo and a song attached."></div>
-          <div class="body">
-            <h2>Remember Me</h2>
-            <p>A diary app for people living with Alzheimer’s. Each entry is a short letter that starts "Dear…", with a photo and a song attached, so the people and moments that matter are easy to revisit.</p>
-            <p><strong>My contribution:</strong> I led a 3-person team researching Alzheimer’s care and designed the prototypes, keeping navigation simple and daily inputs easy for users with memory impairments.</p>
-            <ul class="tags" aria-label="Technologies">
-              <li>Flutter</li><li>FlutterFlow</li><li>Firebase</li><li>Figma</li>
-            </ul>
-            <div class="links">
-              <a href="https://github.com/NotWutLit/remember-me-app">Code on GitHub</a>
-            </div>
+          <img src="assets/img/rm-cover.jpg" width="1000" height="625" loading="lazy" alt="Illustration of a Remember Me entry: a letter that begins ‘Dear Grandma,’ with a photo and a song attached.">
+        </div>
+        <div class="info">
+          <h2 id="rm-title">Remember Me</h2>
+          <p>A diary app for people living with Alzheimer’s. Each entry is a short letter that starts “Dear…”, with a photo and a song attached, so the people and moments that matter are easy to revisit.</p>
+          <p><strong>My contribution:</strong> I led a 3-person team researching Alzheimer’s care and designed the prototypes, keeping navigation simple and daily inputs easy for users with memory impairments.</p>
+          <dl class="facts">
+            <div><dt>Role</dt><dd>Owner &amp; developer</dd></div>
+            <div><dt>Team</dt><dd>3 students</dd></div>
+            <div><dt>Timeline</dt><dd>Oct 2024 – Feb 2025</dd></div>
+          </dl>
+          <ul class="tags" aria-label="Technologies"><li>Flutter</li><li>FlutterFlow</li><li>Firebase</li><li>Figma</li></ul>
+          <div class="actions">
+            <a class="btn ghost" href="https://github.com/NotWutLit/remember-me-app">Code on GitHub</a>
           </div>
-        </article>
+        </div>
+      </article>
 
-        <!-- Copy an <article class="card"> block above for each new project. -->
-      </div>
+      <article class="showcase" data-chibi="laptop" aria-labelledby="site-title">
+        <div class="media term-tile spot" data-tilt="3" aria-hidden="true">
+          <div class="term-bar"><i></i><i></i><i></i>thong@danang: ~/projects</div>
+          <pre><span class="p">$</span> ls
+golden-peace/   remember-me/   <b>this-website/</b>
+<span class="p">$</span> cat this-website/stack.txt
+html  css  javascript  three.js
+<span class="p">$</span> cat this-website/features.txt
+3d city of lights · escape room (5 keys)
+mini me · command palette · terminal
+<span class="p">$</span> <span class="cursor"></span></pre>
+        </div>
+        <div class="info">
+          <h2 id="site-title">This website</h2>
+          <p>The site you’re on, written by hand with plain HTML, CSS and JavaScript. The Home skyline is a 3D point cloud built from my own photo of Đà Nẵng, and there are five keys hidden around it.</p>
+          <ul class="tags" aria-label="Technologies"><li>HTML</li><li>CSS</li><li>JavaScript</li><li>Three.js</li></ul>
+          <div class="actions">
+            <a class="btn ghost" href="https://github.com/NotWutLit/NotWutLit.github.io">Code on GitHub</a>
+            <button class="btn ghost" type="button" data-open="palette">Try the command palette</button>
+          </div>
+        </div>
+      </article>
     </div>
   </main>
 
@@ -78,7 +109,7 @@
         <li><a href="mailto:thong11042008@gmail.com">Email</a></li>
         <li><a href="https://github.com/NotWutLit">GitHub</a></li>
       </ul>
-      <p>Last updated November 2026</p>
+      <p>Built by hand. No frameworks.</p>
     </div>
   </footer>
 </body>

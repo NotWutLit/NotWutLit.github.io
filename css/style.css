@@ -635,3 +635,30 @@ section::after { content: ""; display: table; clear: both; }
 .wide-photo { --r: -1.5deg; margin: 2rem auto 0; max-width: 560px; }
 /* second photo in the About row: tilts the other way, sits a little lower */
 .photo-row .flip:nth-child(2) { --r: 2deg; margin-top: 1.5rem; }
+
+/* ---------- Projects: alternating showcase blocks ---------- */
+.page-head { padding: 2rem 0 1rem; }
+.page-head h1 { font-size: clamp(3rem, 8vw, 5.5rem); }
+.showcase { display: grid; gap: 2rem 3.5rem; align-items: center; padding: 4.5rem 0; border-top: 1px solid var(--border); }
+.showcase:first-of-type { border-top: 0; }
+@media (min-width: 900px) {
+  .showcase { grid-template-columns: 1.15fr 1fr; }
+  .showcase.flip-side .media { order: 2; }
+}
+.media { position: relative; overflow: hidden; border-radius: 22px; border: 1px solid var(--border); background: var(--bg-2);
+  box-shadow: 0 40px 100px -40px rgba(0,0,0,.9); transition: transform .4s var(--ease-out), border-color .3s; }
+.media:hover { border-color: rgba(232,182,81,.4); }
+.media img { width: 100%; height: auto; transition: transform .7s var(--ease-out); }
+.media:hover img { transform: scale(1.035); }
+.media:hover .key.dim, .media .key.dim:focus-visible { opacity: 1; }
+.info h2 { margin: 0 0 1rem; font-size: clamp(2.4rem, 4.5vw, 3.4rem); }
+.info p { color: #D9D5CC; }
+.info .facts { margin: 1.25rem 0 1rem; }
+.info .actions { margin-bottom: 0; }
+
+/* "This website" terminal tile */
+.term-tile { background: linear-gradient(160deg, #111A38, #0B1124); font: 14px/1.75 var(--mono); }
+.term-tile pre { margin: 0; padding: 1.25rem 1.4rem 1.5rem; white-space: pre-wrap; color: #C9CEDD; font: inherit; }
+.term-tile .p { color: var(--gold); }
+.term-tile b { color: var(--gold-soft); font-weight: 500; }
+.term-tile .cursor { display: inline-block; width: .6em; height: 1.1em; vertical-align: -.2em; background: var(--gold); animation: caret-blink 1s steps(1) infinite; }
