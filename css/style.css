@@ -912,53 +912,34 @@ section:has(.illo-side)::after { content: ""; display: table; clear: both; }
 
 /* ---------- 3D titles ---------- */
 .title-3d {
-  --dx: .7;
-  --dy: 1;
-  --title-step: 1px;
-  --depth-1: #3A4680;
-  --depth-2: #343F75;
-  --depth-3: #2E396B;
-  --depth-4: #2A3566;
-  --depth-5: #252F5D;
-  --depth-6: #202952;
-  --depth-7: #1C2448;
-  --depth-8: #181F40;
-  --depth-9: #141B38;
+  --t3d-step: 1.6px;
+  position: relative;
   width: fit-content;
   max-width: 100%;
-  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--rx, 8deg)) rotateY(var(--ry, -10deg));
   transition: transform .5s var(--ease-out);
 }
-.title-3d em {
-  --depth-1: #B8862F;
-  --depth-2: #AD7E2C;
-  --depth-3: #A27629;
-  --depth-4: #966D26;
-  --depth-5: #8B6523;
-  --depth-6: #805D20;
-  --depth-7: #74541D;
-  --depth-8: #694C19;
-  --depth-9: #5E4416;
+.t3d-layer {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(calc(var(--i) * var(--t3d-step) * -1));
+  color: color-mix(in srgb, #7A5A22, #1A1A2E var(--shade));
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
-.title-3d, .title-3d em {
-  text-shadow:
-    calc(var(--dx) * var(--title-step)) calc(var(--dy) * var(--title-step)) 0 var(--depth-1),
-    calc(var(--dx) * var(--title-step) * 2) calc(var(--dy) * var(--title-step) * 2) 0 var(--depth-2),
-    calc(var(--dx) * var(--title-step) * 3) calc(var(--dy) * var(--title-step) * 3) 0 var(--depth-3),
-    calc(var(--dx) * var(--title-step) * 4) calc(var(--dy) * var(--title-step) * 4) 0 var(--depth-4),
-    calc(var(--dx) * var(--title-step) * 5) calc(var(--dy) * var(--title-step) * 5) 0 var(--depth-5),
-    calc(var(--dx) * var(--title-step) * 6) calc(var(--dy) * var(--title-step) * 6) 0 var(--depth-6),
-    calc(var(--dx) * var(--title-step) * 7) calc(var(--dy) * var(--title-step) * 7) 0 var(--depth-7),
-    calc(var(--dx) * var(--title-step) * 8) calc(var(--dy) * var(--title-step) * 8) 0 var(--depth-8),
-    calc(var(--dx) * var(--title-step) * 9) calc(var(--dy) * var(--title-step) * 9) 0 var(--depth-9),
-    0 18px 30px rgba(0,0,0,.55);
+.title-3d .t3d-layer em {
+  color: color-mix(in srgb, #B8862F, #3A2A10 var(--shade));
 }
+.t3d-layer:last-child { text-shadow: 0 20px 24px rgba(0,0,0,.5); }
 @media (max-width: 599px) {
-  .title-3d { --title-step: .55px; }
+  .title-3d { --t3d-step: 1.2px; }
 }
 @media (prefers-reduced-motion: reduce), (pointer: coarse), (pointer: none) {
-  .title-3d { transform: none; transition: none; }
+  .title-3d { transition: none; }
 }
 @media print {
-  .title-3d, .title-3d em { text-shadow: none; transform: none; }
+  .title-3d { transform: none; transition: none; }
+  .t3d-layer { display: none; }
 }

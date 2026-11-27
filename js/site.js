@@ -91,11 +91,41 @@ if (typed && !seen && !reduce) {
 }
 
 /* ---------- 3D titles ---------- */
-if (finePointer && !reduce) (() => {
-  const titles = $$(".title-3d"), visible = new Set();
+(() => {
+  const titles = $$("h1.title-3d"), mobile = matchMedia("(max-width: 599px)");
+  titles.forEach(el => {
+    const face = document.createElement("span"); face.className = "t3d-face";
+    face.append(...el.childNodes); el.append(face);
+    let layers = [], frame = 0;
+    const mirror = () => {
+      frame = 0;
+      const content = face.cloneNode(true);
+      // Clones paint depth without repeating identifiers or selectable content.
+      $$("[id]", content).forEach(node => node.removeAttribute("id"));
+      layers.forEach(layer => { layer.innerHTML = content.innerHTML; });
+    };
+    const build = () => {
+      layers.forEach(layer => layer.remove());
+      const count = mobile.matches ? 7 : 12;
+      layers = Array.from({ length: count }, (_, i) => {
+        const layer = document.createElement("span"); layer.className = "t3d-layer";
+        layer.setAttribute("aria-hidden", "true"); layer.setAttribute("inert", "");
+        layer.style.setProperty("--i", i + 1);
+        layer.style.setProperty("--shade", `${i / (count - 1) * 100}%`);
+        el.append(layer); return layer;
+      });
+      mirror();
+    };
+    build(); mobile.addEventListener("change", build);
+    // Typing changes only the face; batch its depth copies into the same frame.
+    new MutationObserver(() => { if (!frame) frame = requestAnimationFrame(mirror); })
+      .observe(face, { childList: true, characterData: true, subtree: true });
+  });
+  if (!finePointer || reduce) return;
+  const visible = new Set();
   let raf = 0, mx = 0, my = 0;
   const clamp = n => Math.max(-1, Math.min(1, n));
-  const reset = el => ["--rx", "--ry", "--dx", "--dy"].forEach(p => el.style.removeProperty(p));
+  const reset = el => ["--rx", "--ry"].forEach(p => el.style.removeProperty(p));
   const observer = new IntersectionObserver(entries => entries.forEach(({ target, isIntersecting }) => {
     if (isIntersecting) visible.add(target);
     else { visible.delete(target); reset(target); }
@@ -111,10 +141,8 @@ if (finePointer && !reduce) (() => {
         if (!r.width || !r.height) return;
         const px = clamp((mx - r.left - r.width / 2) / (r.width / 2));
         const py = clamp((my - r.top - r.height / 2) / (r.height / 2));
-        el.style.setProperty("--rx", (-py * 8).toFixed(2) + "deg");
-        el.style.setProperty("--ry", (px * 8).toFixed(2) + "deg");
-        el.style.setProperty("--dx", clamp(.7 - px * 1.7).toFixed(2));
-        el.style.setProperty("--dy", clamp(1 - py * 2).toFixed(2));
+        el.style.setProperty("--rx", (-py * 10).toFixed(2) + "deg");
+        el.style.setProperty("--ry", (px * 10).toFixed(2) + "deg");
       });
     });
   }, { passive: true });
