@@ -349,54 +349,101 @@ function confetti() {
 }
 
 /* ---------- Terminal ---------- */
-const term = makeDialog("terminal", `<div class="term-bar"><i></i><i></i><i></i>thong@danang: ~</div><div class="term-out" aria-live="polite"></div>
-  <form class="term-in"><span aria-hidden="true">$</span><label class="sr-only" for="term-input">Terminal command</label><input id="term-input" autocomplete="off" spellcheck="false"></form>`, "Terminal");
+const term = makeDialog("terminal", `<div class="term-bar"><i></i><i></i><i></i>thong@danang: ~<button class="term-x" type="button" aria-label="Close terminal">esc</button></div><div class="term-out" aria-live="polite"></div>
+  <div class="term-chips" aria-label="Quick commands"></div>
+  <form class="term-in"><span aria-hidden="true">$</span><label class="sr-only" for="term-input">Terminal command</label><input id="term-input" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="type a command, or tap one above"><kbd>Tab</kbd></form>`, "Terminal");
 const tout = $(".term-out", term), tin = $("#term-input", term);
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const print = (html, cls = "") => { const d = document.createElement("div"); if (cls) d.className = cls; d.innerHTML = html; tout.append(d); tout.scrollTop = tout.scrollHeight; };
+// a gold command you can click: runs it, or (fill) puts it in the input so you can finish typing
+const c = (cmd, label = cmd, fill) => `<button type="button" class="p cmd" data-${fill ? "fill" : "cmd"}="${cmd}">${esc(label)}</button>`;
+const ROOM_ARG = { home: "home", about: "about", projects: "projects", resume: "resume", gp: "golden peace" };
 let resetArmed = false;
 const CMDS = {
-  help: () => print(`commands: <span class="p">whoami</span>, <span class="p">about</span>, <span class="p">projects</span>, <span class="p">skills</span>, <span class="p">contact</span>, <span class="p">ls</span>, <span class="p">cat about.txt</span>, <span class="p">keys</span>, <span class="p">hint</span>, <span class="p">hint &lt;room&gt;</span>, <span class="p">unlock</span>, <span class="p">reset</span>, <span class="p">open &lt;page&gt;</span>, <span class="p">clear</span>, <span class="p">exit</span>`),
+  help: () => print(`<b>escape room</b>   ${c("keys")}  ${c("hint")}  ${c("hint ", "hint <room>", 1)}  ${c("unlock")}  ${c("reset")}
+<b>about me</b>      ${c("whoami")}  ${c("about")}  ${c("skills")}  ${c("projects")}  ${c("contact")}
+<b>go somewhere</b>  ${c("open ", "open <page>", 1)}  ${c("ls")}
+<b>terminal</b>      ${c("clear")}  ${c("exit")}
+<span class="dim">tip: click any gold word. Tab completes, ↑ ↓ brings back what you typed.</span>`),
   whoami: () => print("Thong Thai. CS student at the University of Georgia, from Đà Nẵng, Vietnam. I build apps for the people around me."),
   about: () => print("Grew up in a three-generation home in Đà Nẵng. My grandmother wanted peace in the family; my father wanted to watch his children grow up. I build so I can be there for others."),
-  projects: () => print(`golden-peace   wellness app for older adults in Vietnam (React Native, Expo, Supabase)\nremember-me    diary app for people living with Alzheimer’s (Flutter, Firebase)\n<span class="dim">try: open golden-peace</span>`),
+  projects: () => print(`golden-peace   wellness app for older adults in Vietnam (React Native, Expo, Supabase)\nremember-me    diary app for people living with Alzheimer’s (Flutter, Firebase)\n<span class="dim">try:</span> ${c("open golden-peace")}  ${c("open remember-me")}`),
   skills: () => print("languages   Python, C++, JavaScript, TypeScript, HTML, CSS\nframeworks  React Native (Expo), Flutter (FlutterFlow)\ndata+tools  MySQL, Supabase, Firebase, YOLOv5-tiny, Figma"),
   contact: () => print(`email   <a href="mailto:${EMAIL}">${EMAIL}</a>\ngithub  <a href="${GITHUB}">${GITHUB.replace("https://", "")}</a>`),
-  ls: () => print("about.txt  golden-peace/  remember-me/  resume.pdf  vault.lock"),
+  ls: () => print(`${c("cat about.txt", "about.txt")}  ${c("open golden-peace", "golden-peace/")}  ${c("open remember-me", "remember-me/")}  ${c("open resume", "resume.pdf")}  ${c("cat vault.lock", "vault.lock")}`),
   "cat about.txt": () => CMDS.about(),
-  "cat vault.lock": () => print(found.size === 5 ? "unlocked. type: unlock" : `locked. keys: ${found.size}/5`, found.size === 5 ? "ok" : "dim"),
-  keys: () => print(`<b>escape room</b>  ${found.size}/5 keys\n` + ROOMS.map(r => found.has(r.id) ? `<span class="ok">[x] ${r.name}</span>` : `[ ] ${r.name}`).join("\n") +
-    `\n<span class="dim">${found.size === 5 ? "all keys found. type unlock" : "type hint for a clue about this page, or hint &lt;room&gt;"}</span>`),
+  "cat vault.lock": () => print(found.size === 5 ? `unlocked. type ${c("unlock")}` : `locked. keys: ${found.size}/5`, found.size === 5 ? "ok" : "dim"),
+  keys: () => print(`<b>escape room</b>  ${found.size}/5 keys  <span class="bar" aria-hidden="true">${"■".repeat(found.size)}<span class="dim">${"□".repeat(5 - found.size)}</span></span>\n` +
+    ROOMS.map(r => found.has(r.id) ? `<span class="ok">[x] ${r.name}</span>` : `[ ] ${r.name.padEnd(13)}${c("hint " + ROOM_ARG[r.id], "get a hint")}${r.id !== page ? "  " + c("open " + (r.id === "gp" ? "golden-peace" : r.id), "go there") : ' <span class="dim">(you are here)</span>'}`).join("\n") +
+    `\n${found.size === 5 ? `<span class="ok">all keys found!</span> type ${c("unlock")}` : `<span class="dim">tip: click a room's hint, or type</span> ${c("hint")} <span class="dim">for this page</span>`}`),
   hint: () => print(hintText(), "p"),
   unlock: () => found.size === 5
     ? (print("ACCESS GRANTED. Mini me is on his way…", "ok"), setTimeout(() => { term.close(); giveCookie(); }, 700))
-    : print(`ACCESS DENIED: ${found.size}/5 keys. Type <span class="p">keys</span> to see which rooms are left.`, "dim"),
+    : print(`ACCESS DENIED: ${found.size}/5 keys. Type ${c("keys")} to see which rooms are left.`, "dim"),
   "sudo hire thong": () => print(`[sudo] password for recruiter: ********\nPermission granted. Opening email...`, "ok") || setTimeout(() => location.href = `mailto:${EMAIL}`, 900),
   reset: () => {
     if (!found.size) return print("No keys to reset yet.", "dim");
-    if (!resetArmed) { resetArmed = true; return print("This puts all 5 keys back in hiding. Type reset again to confirm.", "danger"); }
+    if (!resetArmed) { resetArmed = true; return print(`This puts all 5 keys back in hiding. Type ${c("reset")} again to confirm.`, "danger"); }
     print("Resetting keys...", "danger"); setTimeout(() => { term.close(); resetKeys(); }, 500);
   },
   clear: () => { tout.innerHTML = ""; },
   exit: () => term.close(),
 };
-const PAGES = { home: "index.html", about: "about.html", projects: "projects.html", resume: "resume.html", "golden-peace": "golden-peace.html", "remember-me": "https://github.com/NotWutLit/remember-me-app" };
-$(".term-in", term).addEventListener("submit", e => {
-  e.preventDefault(); const raw = tin.value.trim(); tin.value = ""; if (!raw) return;
-  print(`<span class="p">$</span> ${raw.replace(/</g, "&lt;")}`);
-  const cmd = raw.toLowerCase();
+const ALIAS = { "?": "help", h: "help", k: "keys", key: "keys", clue: "hint", quit: "exit", close: "exit", q: "exit", cls: "clear", me: "whoami", email: "contact", work: "projects" };
+const PAGES = { home: "index.html", about: "about.html", projects: "projects.html", resume: "resume.html", "golden-peace": "golden-peace.html", "golden peace": "golden-peace.html", gp: "golden-peace.html", "remember-me": "https://github.com/NotWutLit/remember-me-app" };
+const ROOM_FOR = { "golden peace": "gp", "golden-peace": "gp", gp: "gp", "résumé": "resume", resume: "resume", home: "home", about: "about", projects: "projects" };
+// everything Tab can complete to
+const COMPLETE = [...Object.keys(CMDS), ...Object.values(ROOM_ARG).map(r => "hint " + r), ...["home", "about", "projects", "resume", "golden-peace", "remember-me"].map(p => "open " + p)];
+function edits(a, b) { // Levenshtein distance, for "did you mean"
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] !== b[j - 1]));
+  return d[a.length][b.length];
+}
+const hist = []; let hpos = 0;
+function run(raw) {
+  raw = raw.trim(); if (!raw) return;
+  hist.push(raw); hpos = hist.length;
+  print(`<span class="p">$</span> ${esc(raw)}`);
+  let cmd = raw.toLowerCase().replace(/\s+/g, " ").replace(/^\$ ?/, "");
+  cmd = ALIAS[cmd] || cmd;
   if (cmd !== "reset") resetArmed = false; // confirmation only counts if typed twice in a row
+  if (cmd === "open" || cmd === "cd") return print(`open where? ${["home", "about", "projects", "resume", "golden-peace"].map(p => c("open " + p, p)).join("  ")}`, "dim");
+  if (cmd === "hint " || cmd === "hint") return CMDS.hint();
   const h = cmd.match(/^hint (.+)$/);
-  if (h) { const r = ROOMS.find(r => r.name.toLowerCase() === h[1] || r.id === h[1] || (h[1] === "golden peace" && r.id === "gp") || (h[1] === "resume" && r.id === "resume"));
-    return r ? print(hintText(r.id), "p") : print(`no room called "${h[1].replace(/</g, "&lt;")}". rooms: home, about, projects, resume, golden peace`, "dim"); }
+  if (h) { const id = ROOM_FOR[h[1]];
+    return id ? print(hintText(id), "p") : print(`no room called "${esc(h[1])}". rooms: ${Object.values(ROOM_ARG).map(r => c("hint " + r, r)).join("  ")}`, "dim"); }
   if (CMDS[cmd]) return CMDS[cmd]();
-  const m = cmd.match(/^(open|cd) (.+)$/); if (m && PAGES[m[2]]) { print(`opening ${m[2]}...`, "dim"); return setTimeout(() => location.href = PAGES[m[2]], 500); }
+  const m = cmd.match(/^(?:open|cd|go) (.+)$/), dest = m ? m[1] : PAGES[cmd] && cmd; // "about" is a command; "resume" alone just opens it
+  if (dest && PAGES[dest]) { print(`opening ${esc(dest)}...`, "dim"); return setTimeout(() => location.href = PAGES[dest], 500); }
   if (cmd.startsWith("sudo")) return print("nice try.", "dim");
-  print(`command not found: ${raw.replace(/</g, "&lt;")}. Type <span class="p">help</span>.`, "dim");
+  const near = COMPLETE.map(x => [x, edits(cmd, x)]).sort((p, q) => p[1] - q[1])[0];
+  print(`command not found: ${esc(raw)}. ${near[1] <= 2 ? `Did you mean ${c(near[0])}? ` : ""}Type ${c("help")} to see everything.`, "dim");
+}
+$(".term-in", term).addEventListener("submit", e => { e.preventDefault(); const v = tin.value; tin.value = ""; run(v); });
+tin.addEventListener("keydown", e => {
+  if (e.key === "Tab") {
+    e.preventDefault(); const v = tin.value.toLowerCase();
+    const opts = COMPLETE.filter(x => x.startsWith(v));
+    if (opts.length === 1) tin.value = opts[0];
+    else if (opts.length > 1) { let pre = opts[0]; opts.forEach(o => { while (!o.startsWith(pre)) pre = pre.slice(0, -1); }); tin.value = pre; if (v) print(opts.map(o => c(o)).join("  "), "dim"); }
+  } else if (e.key === "ArrowUp" && hist.length) { e.preventDefault(); hpos = Math.max(0, hpos - 1); tin.value = hist[hpos]; }
+  else if (e.key === "ArrowDown" && hist.length) { e.preventDefault(); hpos = Math.min(hist.length, hpos + 1); tin.value = hist[hpos] || ""; }
 });
-function openTerminal(run) {
-  if (!tout.childElementCount) print(`Welcome to thong@danang. Type <span class="p">help</span> to start.`, "dim");
+term.addEventListener("click", e => {
+  const b = e.target.closest("[data-cmd], [data-fill]");
+  if (b) { if (b.dataset.cmd) run(b.dataset.cmd); else tin.value = b.dataset.fill; tin.focus(); }
+  else if (e.target.closest(".term-x")) term.close();
+  else if (e.target.closest(".term-out") && !e.target.closest("a") && !getSelection().toString()) tin.focus(); // click the output to type
+});
+function renderChips() {
+  $(".term-chips", term).innerHTML = [found.size === 5 ? "unlock" : "keys", "hint", "help", "whoami", "projects", "contact", "clear"].map(x => c(x)).join("");
+}
+function openTerminal(first) {
+  renderChips();
+  if (!tout.childElementCount) print(`Welcome to thong@danang. New here? Tap a command below, or type ${c("help")}.`, "dim");
   term.showModal(); tin.focus();
-  if (run) { print(`<span class="p">$</span> ${run}`); CMDS[run](); }
+  if (first) run(first);
 }
 
 /* ---------- Command palette (Ctrl/⌘ K) ---------- */
