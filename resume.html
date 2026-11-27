@@ -7,12 +7,12 @@
   <meta name="description" content="Résumé of Thong Thai, computer science student at UGA.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/site.js" defer></script>
 </head>
-<body>
+<body data-page="resume" data-chibi="read">
   <a class="skip-link" href="#main-content">Skip to content</a>
   <header>
     <div class="wide">
@@ -29,82 +29,117 @@
   </header>
 
   <main id="main-content" tabindex="-1">
-    <div class="wrap">
-      <h1>Résumé</h1>
-      <!-- This PDF has the phone number removed. Keep it that way when you replace it. -->
-      <div class="actions"><a class="btn" href="assets/resume.pdf" download="Thong Thai - Resume.pdf">Download PDF</a></div>
-
-      <h2>Education</h2>
-      <div class="resume-item">
-        <h3>University of Georgia, School of Computing</h3>
-        <p class="meta">Intended Bachelor of Science, Computer Science · Athens, GA</p>
-        <p><strong>Relevant coursework:</strong> Introductory Programming, Discrete Mathematics</p>
-      </div>
-
-      <h2>Technical Skills</h2>
-      <ul>
-        <li><strong>Programming languages:</strong> Python, C++, JavaScript, TypeScript, HTML, CSS</li>
-        <li><strong>Frameworks:</strong> React Native (Expo), Flutter (FlutterFlow)</li>
-        <li><strong>Databases and tools:</strong> MySQL, Supabase, Firebase, YOLOv5-tiny, Figma</li>
-      </ul>
-
-      <h2>Experience</h2>
-      <div class="resume-item">
-        <h3>Developer Intern · DZFullStack Software Solutions</h3>
-        <p class="meta">May 2025 – Aug 2025 · Remote / Đà Nẵng, Vietnam</p>
-        <ul>
-          <li>Renovated a restaurant management system by debugging legacy modules and developing new ordering and inventory features.</li>
-          <li>Optimized backend architecture using Python and MySQL, which improved feature load speed by 18%.</li>
-          <li>Reduced the system error rate by 15% and shortened bug resolution time by 30% across three development sprints.</li>
+    <div class="wide resume-layout">
+      <aside class="resume-side" aria-label="Résumé summary">
+        <h1>Résumé</h1>
+        <p class="tagline">Computer science at the University of Georgia. From Đà Nẵng, Vietnam.</p>
+        <!-- This PDF has the phone number removed. Keep it that way when you replace it. -->
+        <div class="actions">
+          <a class="btn" href="assets/resume.pdf" download="Thong Thai - Resume.pdf">Download PDF</a>
+          <button class="btn ghost" type="button" data-print>Print</button>
+        </div>
+        <ul class="contact">
+          <li><a href="mailto:thong11042008@gmail.com">thong11042008@gmail.com</a></li>
+          <li><a href="https://github.com/NotWutLit">github.com/NotWutLit</a></li>
         </ul>
-      </div>
-      <div class="resume-item">
-        <h3>Student Researcher &amp; Co-Author · Duy Tan University, Student Research Collaboration Program</h3>
-        <p class="meta">Oct 2024 – Feb 2025 · Đà Nẵng, Vietnam</p>
-        <ul>
-          <li>Selected as the sole high school student for an AI coursework collaboration, joining a cross-institutional team of 6 researchers.</li>
-          <li>Contributed to dataset construction of 50 object classes (500+ images), data labeling, and preprocessing.</li>
-          <li>Trained a YOLOv5-tiny model over 50 epochs, achieving 88% object recognition accuracy and 85% AI pronunciation precision.</li>
-        </ul>
-      </div>
+        <nav class="resume-nav" aria-label="Résumé sections">
+          <ul>
+            <li><a href="#education">Education</a></li>
+            <li><a href="#skills">Technical skills</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#honors">Honors and awards</a></li>
+            <li><a href="#leadership">Leadership</a></li>
+          </ul>
+        </nav>
+      </aside>
 
-      <h2>Projects</h2>
-      <div class="resume-item">
-        <h3><a href="golden-peace.html">Golden Peace</a>: Elderly Companion Mobile App · Owner &amp; Software Developer</h3>
-        <p class="meta">May 2025 – Present</p>
-        <ul>
-          <li>Founded and led a 4-member development team selected from AgeWell Tech Solutions Club, managing full-cycle mobile app development via weekly sprint reviews.</li>
-          <li>Conducted on-site user research, surveys, and interviews with 120+ elderly individuals and healthcare staff across 4 senior care centers in Hanoi and Đà Nẵng to establish software specifications.</li>
-          <li>Designed high-accessibility UI/UX prototypes in Figma tailored for senior citizens, completing core functional modules for Messaging, Daily Suggestions, and Personal Activity Recommendations.</li>
-        </ul>
-      </div>
-      <div class="resume-item">
-        <h3><a href="https://github.com/NotWutLit/remember-me-app">Remember Me</a>: Alzheimer’s Support Software · Owner &amp; Software Developer</h3>
-        <p class="meta">Oct 2024 – Feb 2025</p>
-        <ul>
-          <li>Spearheaded a 3-member development team to research Alzheimer’s care resources and conceptualize an interactive daily diary application for cognitive support.</li>
-          <li>Engineered complete UI/UX design prototypes prioritizing simplified navigation and low-friction daily inputs to accommodate users with memory impairments.</li>
-        </ul>
-      </div>
+      <div class="resume-main">
+        <section id="education" data-chibi="read" aria-labelledby="h-education">
+          <h2 id="h-education">Education</h2>
+          <div class="resume-item">
+            <h3>University of Georgia, School of Computing</h3>
+            <p class="meta">Intended Bachelor of Science, Computer Science · Athens, GA</p>
+            <p><strong>Relevant coursework:</strong> Introductory Programming, Discrete Mathematics</p>
+          </div>
+        </section>
 
-      <h2>Honors and Awards</h2>
-      <ul>
-        <li>University of Georgia Classic City Scholars Waiver ($80,000+), 2026</li>
-        <li>First Prize, National Round, MOS World Championship, 2025</li>
-        <li>Semi-Finalist, National, The 7th U-Invent Competition, 2024</li>
-        <li>Consolidation Prize, City Level Youth Informatics Contest, 2024</li>
-      </ul>
+        <section id="skills" data-chibi="laptop" aria-labelledby="h-skills">
+          <h2 id="h-skills">Technical <em>skills</em></h2>
+          <div class="skill-groups">
+            <div><h3>Programming languages</h3><ul class="tags"><li>Python</li><li>C++</li><li>JavaScript</li><li>TypeScript</li><li>HTML</li><li>CSS</li></ul></div>
+            <div><h3>Frameworks</h3><ul class="tags"><li>React Native (Expo)</li><li>Flutter (FlutterFlow)</li></ul></div>
+            <div><h3>Databases and tools</h3><ul class="tags"><li>MySQL</li><li>Supabase</li><li>Firebase</li><li>YOLOv5-tiny</li><li>Figma</li></ul></div>
+          </div>
+        </section>
 
-      <h2>Leadership</h2>
-      <div class="resume-item">
-        <h3>Co-Founder &amp; Vice President · EmoTech</h3>
-        <p class="meta">Feb 2025 – Present · Vietnam</p>
-        <ul><li>Lead a digital wellness initiative; partnered with Gia An Autism Care Center to organize interactive sessions.</li></ul>
-      </div>
-      <div class="resume-item">
-        <h3>Vice President · AgeWell Tech Solutions Club</h3>
-        <p class="meta">June 2025 – Present · Vietnam</p>
-        <ul><li>Co-manage a 30-member team to execute 3 hardware and software solutions addressing elderly care.</li></ul>
+        <section id="experience" data-chibi="laptop" aria-labelledby="h-experience">
+          <h2 id="h-experience">Experience</h2>
+          <div class="resume-item">
+            <h3>Developer Intern · DZFullStack Software Solutions</h3>
+            <p class="meta">May 2025 – Aug 2025 · Remote / Đà Nẵng, Vietnam</p>
+            <ul>
+              <li>Renovated a restaurant management system by debugging legacy modules and developing new ordering and inventory features.</li>
+              <li>Optimized backend architecture using Python and MySQL, which improved feature load speed by 18%.</li>
+              <li>Reduced the system error rate by 15% and shortened bug resolution time by 30% across three development sprints.</li>
+            </ul>
+          </div>
+          <div class="resume-item">
+            <h3>Student Researcher &amp; Co-Author · Duy Tan University, Student Research Collaboration Program</h3>
+            <p class="meta">Oct 2024 – Feb 2025 · Đà Nẵng, Vietnam</p>
+            <ul>
+              <li>Selected as the sole high school student for an AI coursework collaboration, joining a cross-institutional team of 6 researchers.</li>
+              <li>Contributed to dataset construction of 50 object classes (500+ images), data labeling, and preprocessing.</li>
+              <li>Trained a YOLOv5-tiny model over 50 epochs, achieving 88% object recognition accuracy and 85% AI pronunciation precision.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="projects" data-chibi="laptop" aria-labelledby="h-projects">
+          <h2 id="h-projects">Projects</h2>
+          <div class="resume-item">
+            <h3><a href="golden-peace.html">Golden Peace</a>: Elderly Companion Mobile App · Owner &amp; Software Developer</h3>
+            <p class="meta">May 2025 – Present</p>
+            <ul>
+              <li>Founded and led a 4-member development team selected from AgeWell Tech Solutions Club, managing full-cycle mobile app development via weekly sprint reviews.</li>
+              <li>Conducted on-site user research, surveys, and interviews with 120+ elderly individuals and healthcare staff across 4 senior care centers in Hanoi and Đà Nẵng to establish software specifications.</li>
+              <li>Designed high-accessibility UI/UX prototypes in Figma tailored for senior citizens, completing core functional modules for Messaging, Daily Suggestions, and Personal Activity Recommendations.</li>
+            </ul>
+          </div>
+          <div class="resume-item">
+            <h3><a href="https://github.com/NotWutLit/remember-me-app">Remember Me</a>: Alzheimer’s Support Software · Owner &amp; Software Developer</h3>
+            <p class="meta">Oct 2024 – Feb 2025</p>
+            <ul>
+              <li>Spearheaded a 3-member development team to research Alzheimer’s care resources and conceptualize an interactive daily diary application for cognitive support.</li>
+              <li>Engineered complete UI/UX design prototypes prioritizing simplified navigation and low-friction daily inputs to accommodate users with memory impairments.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="honors" data-chibi="wave" aria-labelledby="h-honors">
+          <h2 id="h-honors">Honors and <em>awards</em></h2>
+          <ul class="awards">
+            <li class="spot"><span class="year">2026</span>University of Georgia Classic City Scholars Waiver ($80,000+)</li>
+            <li class="spot"><span class="year">2025</span>First Prize, National Round, MOS World Championship</li>
+            <li class="spot"><span class="year">2024</span>Semi-Finalist, National, The 7th U-Invent Competition</li>
+            <li class="spot"><span class="year">2024</span>Consolidation Prize, City Level Youth Informatics Contest</li>
+          </ul>
+        </section>
+
+        <section id="leadership" data-chibi="wave" aria-labelledby="h-leadership">
+          <h2 id="h-leadership">Leadership</h2>
+          <div class="resume-item">
+            <h3>Co-Founder &amp; Vice President · EmoTech</h3>
+            <p class="meta">Feb 2025 – Present · Vietnam</p>
+            <ul><li>Lead a digital wellness initiative; partnered with Gia An Autism Care Center to organize interactive sessions.</li></ul>
+          </div>
+          <div class="resume-item">
+            <h3>Vice President · AgeWell Tech Solutions Club</h3>
+            <p class="meta">June 2025 – Present · Vietnam</p>
+            <ul><li>Co-manage a 30-member team to execute 3 hardware and software solutions addressing elderly care.</li></ul>
+          </div>
+          <p class="the-end">The end, for now. <button class="key key-inline" type="button" data-key="resume" hidden></button></p>
+        </section>
       </div>
     </div>
   </main>
@@ -115,7 +150,7 @@
         <li><a href="mailto:thong11042008@gmail.com">Email</a></li>
         <li><a href="https://github.com/NotWutLit">GitHub</a></li>
       </ul>
-      <p>Last updated November 2026</p>
+      <p>Built by hand. No frameworks.</p>
     </div>
   </footer>
 </body>

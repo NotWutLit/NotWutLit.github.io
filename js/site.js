@@ -257,6 +257,20 @@ if (letterForm) {
   });
 }
 
+/* ---------- Résumé: section menu follows your reading, print button ---------- */
+const navLinks = $$(".resume-nav a");
+if (navLinks.length) {
+  const secs = navLinks.map(a => $(a.getAttribute("href"))).filter(Boolean);
+  let raf = 0;
+  const spy = () => {
+    raf = 0; let cur = secs[0];
+    secs.forEach(s => { if (s.getBoundingClientRect().top < innerHeight * .35) cur = s; }); // last section whose top passed 35% of the screen
+    navLinks.forEach(a => a.getAttribute("href") === "#" + cur.id ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current"));
+  };
+  addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(spy); }, { passive: true }); spy();
+}
+$("[data-print]")?.addEventListener("click", () => print());
+
 /* ---------- Dialog helper ---------- */
 function makeDialog(cls, html, label) {
   const d = document.createElement("dialog"); d.className = cls; d.innerHTML = html; d.setAttribute("aria-label", label);
