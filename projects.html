@@ -38,7 +38,6 @@
       <article class="showcase" data-chibi="laptop" aria-labelledby="gp-title">
         <div class="media spot" data-tilt="3">
           <img class="vt-gp" src="assets/img/gp-cover.jpg" width="1000" height="625" alt="Three Golden Peace screens side by side: the Relax tab with large photo tiles, the home screen with a big ‘Xin chào!’ greeting, and the daily health checklist.">
-          <button class="key dim" type="button" data-key="projects" style="right:14px;bottom:14px"></button>
         </div>
         <div class="info">
           <h2 id="gp-title">Golden Peace</h2>
@@ -77,6 +76,46 @@
           </div>
         </div>
       </article>
+
+
+      <section class="letter-lab" data-chibi="read" aria-labelledby="letter-title">
+        <div class="ll-intro">
+          <h2 id="letter-title">Try it: write a <em>Remember Me</em> entry</h2>
+          <p>Every entry in Remember Me is a letter to someone you love. Write a few words, then seal it.</p>
+          <p class="hint">Your letter stays in your browser. Nothing is sent or saved.</p>
+        </div>
+        <div class="ll-stage">
+          <form class="letter" id="letter-form">
+            <fieldset class="to">
+              <legend class="sr-only">Who is the letter for?</legend>
+              <span class="dear" aria-hidden="true">Dear</span>
+              <label><input type="radio" name="to" value="Grandma" checked><span>Grandma</span></label>
+              <label><input type="radio" name="to" value="Grandpa"><span>Grandpa</span></label>
+              <label><input type="radio" name="to" value="Mom"><span>Mom</span></label>
+              <label><input type="radio" name="to" value="Dad"><span>Dad</span></label>
+            </fieldset>
+            <label class="sr-only" for="letter-body">Your letter</label>
+            <textarea id="letter-body" rows="5" maxlength="600" placeholder="I still remember…" aria-describedby="letter-count"></textarea>
+            <div class="letter-foot">
+              <span class="sign">remember me</span>
+              <span class="count" id="letter-count">Write at least 15 characters</span>
+            </div>
+            <button class="btn" type="submit" disabled>Seal the letter</button>
+          </form>
+          <div class="envelope" hidden>
+            <svg class="env" viewBox="0 0 240 170" aria-hidden="true">
+              <rect x="10" y="40" width="220" height="120" rx="6" fill="#F7F3EA"/>
+              <path d="M10 46l110 66 110-66" fill="none" stroke="#E2D3AE" stroke-width="2"/>
+              <path d="M10 160l86-58M230 160l-86-58" fill="none" stroke="#E2D3AE" stroke-width="2"/>
+              <path class="flap" d="M10 46h220L120 118z" fill="#EFE6D2" stroke="#E2D3AE" stroke-width="2"/>
+              <g class="seal"><circle cx="120" cy="112" r="16" fill="#C9962F"/><circle cx="120" cy="112" r="12" fill="none" stroke="#F4D58D" stroke-width="1.4"/><text x="120" y="118" text-anchor="middle" font-family="Instrument Serif, Georgia, serif" font-size="17" fill="#F4D58D">T</text></g>
+            </svg>
+            <p class="env-msg" role="status"></p>
+            <button class="key key-inline" type="button" data-key="projects" hidden></button>
+            <button class="btn ghost" type="button" data-act="again">Write another</button>
+          </div>
+        </div>
+      </section>
 
       <article class="showcase" data-chibi="laptop" aria-labelledby="site-title">
         <div class="media term-tile spot" data-tilt="3" aria-hidden="true">

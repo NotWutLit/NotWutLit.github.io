@@ -662,3 +662,42 @@ section::after { content: ""; display: table; clear: both; }
 .term-tile .p { color: var(--gold); }
 .term-tile b { color: var(--gold-soft); font-weight: 500; }
 .term-tile .cursor { display: inline-block; width: .6em; height: 1.1em; vertical-align: -.2em; background: var(--gold); animation: caret-blink 1s steps(1) infinite; }
+
+/* ---------- Projects: write a Remember Me letter to earn the key ---------- */
+.letter-lab { display: grid; gap: 2rem 3.5rem; align-items: center; padding: 1rem 0 4.5rem; }
+@media (min-width: 900px) { .letter-lab { grid-template-columns: 1fr 1.15fr; } }
+.ll-intro h2 { margin: 0 0 1rem; font-size: clamp(2rem, 3.6vw, 2.8rem); }
+.ll-intro p { color: #D9D5CC; }
+.ll-stage { position: relative; min-height: 420px; display: grid; place-items: center; }
+.letter { width: 100%; max-width: 560px; background: #F7F3EA; color: #2B2B2B; border-radius: 6px; padding: 1.75rem 1.75rem 1.5rem; transform: rotate(-1.2deg);
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.85), 0 0 60px -10px rgba(232,182,81,.18); }
+.letter .to { border: 0; margin: 0 0 .75rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; }
+.letter .dear { font: italic 2rem/1 var(--serif); margin-right: .25rem; }
+.letter .to label { position: relative; }
+.letter .to input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.letter .to label span { display: inline-flex; align-items: center; min-height: 40px; padding: 0 .9rem; border-radius: 999px; border: 1px solid #D8CCB0; font: 500 15px var(--sans); color: #5E5A52; transition: background .15s, color .15s, border-color .15s; }
+.letter .to input:checked + span { background: #8A6D2B; border-color: #8A6D2B; color: #fff; }
+.letter .to input:focus-visible + span { outline: 2px solid #8A6D2B; outline-offset: 2px; }
+.letter textarea { display: block; width: 100%; resize: vertical; min-height: 10.5rem; border: 0; outline: 0; background: transparent; color: #2B2B2B;
+  font: italic 1.35rem/2.1rem var(--serif); padding: 0 .1rem;
+  background-image: repeating-linear-gradient(transparent 0 2.03rem, #E2D6BC 2.03rem 2.1rem); background-attachment: local; }
+.letter textarea::placeholder { color: #8F887A; }
+.letter textarea:focus-visible { box-shadow: 0 0 0 2px rgba(138,109,43,.45); border-radius: 4px; }
+.letter-foot { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin: .75rem 0 1rem; }
+.letter .sign { font: italic 1.4rem var(--serif); color: #8A6D2B; }
+.letter .count { font: 12px var(--mono); color: #6B6558; }
+.letter .count.ok { color: #3E7A4E; }
+.letter .btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+.letter.sealing { animation: fold-in .9s var(--ease-out) forwards; pointer-events: none; }
+@keyframes fold-in { 40% { transform: rotate(-1.2deg) scaleY(.45); } 100% { transform: translateY(80px) scale(.3); opacity: 0; } }
+.envelope { text-align: center; display: grid; justify-items: center; gap: .75rem; }
+.envelope[hidden] { display: none; }
+.env { width: min(320px, 80vw); height: auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,.6)); }
+.env .flap { transform-box: fill-box; transform-origin: top center; transform: scaleY(-1); }
+.envelope.closing .flap { animation: flap-close .7s var(--ease-out) .1s forwards; }
+.env .seal { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.envelope.closing .seal { animation: seal-stamp .5s var(--ease-out) .75s forwards; }
+@keyframes flap-close { to { transform: scaleY(1); } }
+@keyframes seal-stamp { 0% { opacity: 0; transform: scale(1.8); } 100% { opacity: 1; transform: scale(1); } }
+.env-msg { margin: 0; font: italic 1.3rem var(--serif); color: var(--gold-soft); min-height: 1.6em; }
+@media (prefers-reduced-motion: reduce) { .env .flap { transform: none; } .env .seal { opacity: 1; } }

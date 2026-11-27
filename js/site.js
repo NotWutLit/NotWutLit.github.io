@@ -167,7 +167,7 @@ function toast(msg) { toastEl.textContent = msg; toastEl.classList.add("show"); 
 const ROOMS = [
   { id: "home", name: "Home", url: "index.html", hint: "Photos on a table can hide things. Try moving them around." },
   { id: "about", name: "About", url: "about.html", hint: "Some photos have something written on the back." },
-  { id: "projects", name: "Projects", url: "projects.html", hint: "Something small glints on one of the project images. Look closely." },
+  { id: "projects", name: "Projects", url: "projects.html", hint: "Remember Me entries are letters. Write one to someone you love and seal it." },
   { id: "resume", name: "Résumé", url: "resume.html", hint: "Read all the way to the end of my story." },
   { id: "gp", name: "Golden Peace", url: "golden-peace.html", hint: "Watch the demo. The key shows up when the app starts playing." },
 ];
@@ -218,6 +218,37 @@ $("#demo-btn")?.addEventListener("click", () => setTimeout(() => keyFor("gp")?.r
 const lastItem = $$(".resume-item").at(-1);
 lastItem?.addEventListener("revealed", () => keyFor("resume")?.removeAttribute("hidden"));
 if (reduce && lastItem) keyFor("resume")?.removeAttribute("hidden");
+
+/* ---------- Projects: write a letter, seal it, a key falls out ---------- */
+const letterForm = $("#letter-form");
+if (letterForm) {
+  const body = $("#letter-body"), send = $("button[type=submit]", letterForm), count = $(".count", letterForm);
+  const env = $(".envelope"), msg = $(".env-msg", env), MIN = 15;
+  const check = () => {
+    const n = body.value.trim().length, ok = n >= MIN;
+    send.disabled = !ok; count.classList.toggle("ok", ok);
+    count.textContent = ok ? "Ready to seal" : `Write at least ${MIN} characters (${n}/${MIN})`;
+  };
+  body.addEventListener("input", check); check();
+  letterForm.addEventListener("submit", e => {
+    e.preventDefault(); if (send.disabled) return;
+    const who = letterForm.querySelector("input[name=to]:checked").value;
+    letterForm.classList.add("sealing");
+    setTimeout(() => {
+      letterForm.hidden = true; letterForm.classList.remove("sealing");
+      env.hidden = false; env.classList.remove("closing"); void env.offsetWidth; env.classList.add("closing");
+      msg.textContent = `Sealed and addressed to ${who}.`;
+      setTimeout(() => {
+        const k = keyFor("projects");
+        if (k) { k.removeAttribute("hidden"); msg.textContent = "Something fell out of the envelope…"; }
+        else msg.textContent = `Sealed and addressed to ${who}. You already have this room’s key.`;
+      }, reduce ? 0 : 1400);
+    }, reduce ? 0 : 900);
+  });
+  $("[data-act=again]", env).addEventListener("click", () => {
+    env.hidden = true; letterForm.hidden = false; body.value = ""; check(); body.focus();
+  });
+}
 
 /* ---------- Dialog helper ---------- */
 function makeDialog(cls, html, label) {
