@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Golden Peace · Thong Thai</title>
+  <meta name="description" content="Golden Peace: a calm, easy-to-read wellness app for older adults in Vietnam. Who it’s for, what we built, and what I learned designing for other people.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header>
+    <div class="wide">
+      <a class="logo" href="index.html">Thong Thai</a>
+      <nav aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="projects.html" aria-current="true">Projects</a></li>
+          <li><a href="resume.html">Résumé</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <!-- 1. Hero -->
+    <div class="wrap">
+      <section class="feature" aria-labelledby="title">
+        <img class="vt-gp" src="assets/img/gp-welcome.png" width="400" height="867"
+             alt="Golden Peace welcome screen: an older couple smiling together, the app name 'An Tâm Tuổi Vàng' and the line 'Sống vui, sống khỏe mỗi ngày' (Live happily, live healthily every day) in large white text, and one 'Continue' button.">
+        <div>
+          <h1 id="title">Golden Peace</h1>
+          <p class="lead"><em>An Tâm Tuổi Vàng</em>, or "peace of mind in the golden years": a mobile app that helps older adults in Vietnam track their emotions, relax with music and meditation, and keep healthy daily habits.</p>
+          <dl class="facts">
+            <div><dt>Role</dt><dd>Owner &amp; software developer</dd></div>
+            <div><dt>Team</dt><dd>4 students</dd></div>
+            <div><dt>Timeline</dt><dd>May 2025 – present</dd></div>
+            <div><dt>Built with</dt><dd>React Native, Expo, TypeScript, Supabase, Figma</dd></div>
+          </dl>
+          <div class="actions">
+            <a class="btn" href="#demo">Watch demo (4 MB)</a>
+          </div>
+          <p class="jump"><a href="#reflection">Jump to what I learned</a> · <a href="https://github.com/NotWutLit/golden-peace-app">View code on GitHub</a></p>
+        </div>
+      </section>
+
+      <!-- 2. Who it’s for -->
+      <h2>Who it’s for</h2>
+      <p>Golden Peace is for people aged 60 and over, and for the family members and caregivers who want to support them. Many older adults feel lonely or anxious but don’t have an easy way to notice how their mood changes or to find calming, healthy activities. Most apps aren’t made for them: the text is small, the screens are crowded, and it isn’t clear what to tap next.</p>
+      <p>During our research, we found that older adults often struggled to use buttons and complete complex tasks. That made ease of use a central concern: someone should be able to find an activity and understand what to do next without working through a complicated sequence of screens.</p>
+      <p>We wanted to make a safe, positive place where older adults can share how they feel, find health information, and take part in activities that are good for them, all in one app, with large text and simple screens. The app is built with React Native (Expo) and uses Supabase for accounts and data.</p>
+
+      <!-- 4. My role -->
+      <h2>My role</h2>
+      <p>I’m the project’s owner and a software developer. I founded the team, four members from the AgeWell Tech Solutions Club, and ran our development in weekly sprint reviews. To decide what to build, we did on-site research, surveys and interviews with more than 120 older adults and healthcare staff at 4 senior care centers in Hanoi and Đà Nẵng. I designed the high-accessibility prototypes in Figma, and we completed the core modules for messaging, daily suggestions and personal activity recommendations.</p>
+      <p>Golden Peace is a team effort. My contribution connects the research and interface design with the development work: turning what we learned about older adults’ needs into screens and tasks we could build together.</p>
+
+      <!-- 5. From research to design -->
+      <h2>From research to design</h2>
+      <p class="anchor">120+ older adults and care staff · 4 senior care centers · Hanoi and Đà Nẵng</p>
+      <p>The difficulty older adults had with buttons and complex tasks gave us a practical design priority: make each action easy to find and keep the path to it short. The interface uses large text, wide buttons and a small set of clearly labeled choices. Profile setup asks for a name and an optional photo, with a way to skip it, while the Relax screen groups activities into four large tiles. To evaluate these choices, I’d ask users to sign in, find a song and complete a daily check-in, then watch where they hesitate or need help.</p>
+
+      <!-- 6. Gallery -->
+      <h2>A closer look</h2>
+      <p class="hint">Select a screen to see it full size.</p>
+      <div class="gallery">
+        <figure>
+          <a href="assets/img/gp-login.png" class="enlarge"><img class="phone" src="assets/img/gp-login.png" width="400" height="867" loading="lazy"
+               alt="Login screen titled 'Đăng nhập' with two large fields, phone number and password, and one wide dark-green 'Log in' button."><span class="sr-only"> (opens full-size image)</span></a>
+          <figcaption><strong>Log in.</strong> Users sign in with a phone number instead of an email address, which many older adults in Vietnam use more. There are only two large fields and one clear button.</figcaption>
+        </figure>
+        <figure>
+          <a href="assets/img/gp-profile.png" class="enlarge"><img class="phone" src="assets/img/gp-profile.png" width="400" height="867" loading="lazy"
+               alt="Profile setup screen asking 'Hãy cho chúng tôi biết về bạn' (Tell us about yourself) with an optional photo, a name field, a 'Continue' button and a 'Skip' link."><span class="sr-only"> (opens full-size image)</span></a>
+          <figcaption><strong>Tell us about yourself.</strong> Setup asks for just a name and an optional photo, and anything can be skipped, so no one gets stuck before reaching the app.</figcaption>
+        </figure>
+        <figure>
+          <a href="assets/img/gp-music.png" class="enlarge"><img class="phone" src="assets/img/gp-music.png" width="400" height="867" loading="lazy"
+               alt="Relax tab with four large photo tiles: old songs, nature sounds, guided meditation, and podcasts."><span class="sr-only"> (opens full-size image)</span></a>
+          <figcaption><strong>Relax.</strong> Music and meditation come in four big photo tiles: old songs (<em>nhạc xưa</em>), nature sounds, guided meditation and podcasts. Large targets are easier to tap for users with shaky hands or weaker eyesight.</figcaption>
+        </figure>
+        <figure>
+          <a href="assets/img/gp-health.png" class="enlarge"><img class="phone" src="assets/img/gp-health.png" width="400" height="867" loading="lazy"
+               alt="Health screen 'Chăm sóc tinh thần và sức khỏe' with a light breathing exercise, a daily habits checklist (breathing, drinking water, walking, music, calling a loved one), and a 'How do you feel' check-in."><span class="sr-only"> (opens full-size image)</span></a>
+          <figcaption><strong>Daily habits.</strong> A short checklist of small, achievable goals: breathe for 5 minutes, drink water, walk for 15 minutes, listen to music, and call someone you love.</figcaption>
+        </figure>
+      </div>
+
+      <!-- 7. Demo: plays only when asked, since moving images can be hard for some visitors -->
+      <section class="demo" id="demo" aria-labelledby="demo-title">
+        <h2 id="demo-title">Demo</h2>
+        <p>A walk through the app, from the welcome screen to playing music.</p>
+        <div class="actions"><button class="btn" id="demo-btn" type="button">Play demo</button></div>
+        <img id="demo-img" class="phone" src="assets/img/gp-playlist.png" width="400" height="867" loading="lazy"
+             alt="Still frame from the demo: the 'Nhạc hay mỗi ngày' (Good music every day) playlist screen. Press Play demo to watch.">
+        <p id="demo-status" class="status" role="status"></p>
+      </section>
+
+      <!-- Reflection connects the family story with designing and revising for an audience. -->
+      <section class="reflection" id="reflection" aria-labelledby="reflection-title">
+        <h2 id="reflection-title">What I learned designing for other people</h2>
+        <p class="opening">My father said wealth and status meant little compared with watching his children grow up.</p>
+        <p>When I interviewed him, I began to understand what being there for someone could mean. I carried that question into Golden Peace. During our research, older adults struggled with buttons and complex tasks. A feature could sound useful to our team and still ask too much of the person trying to use it. Large controls, short setup and clear choices became ways to take that difficulty seriously.</p>
+        <p>The project has taught me to start with the person on the other side of the screen. I need to listen, notice where a task becomes confusing, and be willing to change what I’ve made. Revising my writing asks something similar of me. I know the connection between two ideas because I wrote them; a reader may need a clearer transition or a concrete detail. In both cases, my intention only goes so far. I have to make the next step easier to follow.</p>
+        <p>My father’s answer keeps bringing me back to the same purpose: do the work so I can be there for others.</p>
+      </section>
+
+      <!-- 9. Back link: quiet, so the reflection stays the last thing that matters -->
+      <p class="back"><a href="projects.html">Back to projects</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wide">
+      <ul>
+        <li><a href="mailto:thong11042008@gmail.com">Email</a></li>
+        <li><a href="https://github.com/NotWutLit">GitHub</a></li>
+      </ul>
+      <p>Last updated November 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    // Swap the still frame for the 4 MB GIF only when asked, and say when it's loading.
+    const img = document.getElementById("demo-img"),
+          btn = document.getElementById("demo-btn"),
+          status = document.getElementById("demo-status");
+    const still = { src: img.getAttribute("src"), alt: img.alt };
+    const gif = { src: "assets/img/gp-demo.gif",
+                  alt: "Animated demo of Golden Peace: welcome, log in, sign up, profile setup, home, relax, health and playlist screens." };
+
+    let playing = false;
+    function setDemo(play) {
+      playing = play;
+      img.onload = img.onerror = null;
+      if (!play) {
+        img.src = still.src; img.alt = still.alt;
+        btn.textContent = "Play demo"; status.textContent = "";
+        return;
+      }
+      btn.textContent = "Stop demo";
+      status.textContent = "Loading the demo…";
+      img.onload = () => { status.textContent = ""; };
+      img.onerror = () => { setDemo(false); status.innerHTML = 'The demo couldn’t load. Try again, or <a href="https://github.com/NotWutLit/golden-peace-app">watch it on GitHub</a>.'; };
+      img.loading = "eager";
+      img.src = gif.src; img.alt = gif.alt;
+    }
+
+    btn.addEventListener("click", () => setDemo(!playing));
+    // "Watch demo" in the hero scrolls here and starts it.
+    // Focus moves to the demo button so keyboard and screen-reader users land on the control.
+    document.querySelectorAll('a[href="#demo"]').forEach(a => a.addEventListener("click", () => { setDemo(true); setTimeout(() => btn.focus(), 0); }));
+  </script>
+</body>
+</html>

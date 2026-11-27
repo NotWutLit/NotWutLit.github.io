@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Projects · Thong Thai</title>
+  <meta name="description" content="Apps and projects by Thong Thai.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header>
+    <div class="wide">
+      <a class="logo" href="index.html">Thong Thai</a>
+      <nav aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="projects.html" aria-current="page">Projects</a></li>
+          <li><a href="resume.html">Résumé</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <div class="wide">
+      <h1>Projects</h1>
+      <p class="tagline">Things I’ve built, and what I did on each one.</p>
+
+      <div class="cards">
+        <article class="card">
+          <div class="thumb"><img class="vt-gp" src="assets/img/gp-home.png" width="400" height="867" alt="Golden Peace home screen with a large greeting and an emotion journal card."></div>
+          <div class="body">
+            <h2>Golden Peace</h2>
+            <p>A mobile app for older adults in Vietnam to track emotions, relax with music and meditation, and keep healthy daily habits.</p>
+            <p><strong>My contribution:</strong> I founded and led the 4-person team, ran research with 120+ older adults and care staff at 4 senior care centers, and designed the accessible UI in Figma.</p>
+            <ul class="tags" aria-label="Technologies">
+              <li>React Native</li><li>Expo</li><li>TypeScript</li><li>Supabase</li><li>Figma</li>
+            </ul>
+            <div class="links">
+              <a href="golden-peace.html">Case study</a>
+              <a href="https://github.com/NotWutLit/golden-peace-app">Code on GitHub</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <!-- No screenshots in the repo yet: the app’s own welcome line stands in. To use a screenshot, replace the <blockquote> with an <img>. -->
+          <div class="thumb quote-thumb">
+            <blockquote>Remember those you love, remember those you cherish, remember&nbsp;me.</blockquote>
+          </div>
+          <div class="body">
+            <h2>Remember Me</h2>
+            <p>A diary app for people living with Alzheimer’s. Each entry is a short letter that starts "Dear…", with a photo and a song attached, so the people and moments that matter are easy to revisit.</p>
+            <p><strong>My contribution:</strong> I led a 3-person team researching Alzheimer’s care and designed the prototypes, keeping navigation simple and daily inputs easy for users with memory impairments.</p>
+            <ul class="tags" aria-label="Technologies">
+              <li>Flutter</li><li>FlutterFlow</li><li>Firebase</li><li>Figma</li>
+            </ul>
+            <div class="links">
+              <a href="https://github.com/NotWutLit/remember-me-app">Code on GitHub</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Copy an <article class="card"> block above for each new project. -->
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wide">
+      <ul>
+        <li><a href="mailto:thong11042008@gmail.com">Email</a></li>
+        <li><a href="https://github.com/NotWutLit">GitHub</a></li>
+      </ul>
+      <p>Last updated November 2026</p>
+    </div>
+  </footer>
+</body>
+</html>
