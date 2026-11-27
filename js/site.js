@@ -243,9 +243,10 @@ if (par && !reduce) addEventListener("scroll", () => {
 }, { passive: true });
 
 /* ---------- Text scramble: "I build apps for ___" ---------- */
+const scrambleGlyphs = "!<>-_\\/[]{}=+*^?#01";
 const scr = $(".scramble");
 if (scr) {
-  const phrases = JSON.parse(scr.dataset.phrases || "[]"), glyphs = "!<>-_\\/[]{}=+*^?#01";
+  const phrases = JSON.parse(scr.dataset.phrases || "[]"), glyphs = scrambleGlyphs;
   let idx = 0;
   const to = (next) => new Promise(done => {
     if (!motionOK()) { scr.textContent = next; return done(); }
@@ -932,6 +933,86 @@ if ($("#city")) {
   };
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }).observe(canvas);
   addEventListener("motionchange", sync); addEventListener("resize", resize); resize();
+})();
+
+/* ---------- Motion: project cards ---------- */
+(() => {
+  if (page !== "projects") return;
+  $$(".project-card").forEach(card => {
+    const surface = $(".project-surface", card);
+    aboutScene(card, light => [card.animate([
+      { transform: `perspective(1000px) rotateY(${light ? -3 : -12}deg) translateY(${light ? 8 : 20}px)`, opacity: 0 },
+      { transform: "perspective(1000px) rotateY(0deg) translateY(0)", opacity: 1 }
+    ], { duration: light ? 420 : 850, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" })]);
+    let visible = false;
+    const reset = () => { surface.classList.remove("project-pointed"); surface.style.transform = ""; ["--glare-x", "--glare-y", "--shadow-x", "--shadow-y"].forEach(p => surface.style.removeProperty(p)); };
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (!visible) reset(); }).observe(card);
+    surface.addEventListener("pointermove", e => {
+      if (!visible || !finePointer || innerWidth < 600 || !motionOK() || document.hidden) return;
+      const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      surface.classList.add("project-pointed");
+      surface.style.setProperty("--glare-x", `${(x * 65).toFixed(2)}%`); surface.style.setProperty("--glare-y", `${(y * 45).toFixed(2)}%`);
+      surface.style.setProperty("--shadow-x", `${(-x * 16).toFixed(2)}px`); surface.style.setProperty("--shadow-y", `${(8 - y * 10).toFixed(2)}px`);
+    }, { passive: true });
+    surface.addEventListener("pointerleave", reset); addEventListener("motionchange", reset); addEventListener("resize", reset);
+  });
+})();
+
+/* ---------- Motion: project tags ---------- */
+(() => {
+  if (page !== "projects") return;
+  $$(".showcase .tags li").forEach(tag => {
+    aboutScene(tag, light => {
+      // Keep the final label accessible while decorative glyph reels resolve one letter at a time.
+      const final = tag.textContent, label = document.createElement("span"), copy = document.createElement("span");
+      label.textContent = final; label.className = "tag-label";
+      copy.className = "tag-scramble"; copy.setAttribute("aria-hidden", "true");
+      tag.replaceChildren(label, copy); tag.classList.add("tag-scrambling");
+      const animations = [...final].map((char, i) => {
+        const cell = document.createElement("span"), reel = document.createElement("span");
+        cell.className = "tag-cell"; reel.className = "tag-reel";
+        const glyph = () => scrambleGlyphs[Math.floor(Math.random() * scrambleGlyphs.length)];
+        [char === " " ? "\u00a0" : glyph(), char === " " ? "\u00a0" : glyph(), char === " " ? "\u00a0" : char].forEach(c => { const span = document.createElement("span"); span.textContent = c; reel.append(span); });
+        cell.append(reel); copy.append(cell);
+        return reel.animate([{ transform: "translateY(0)" }, { transform: "translateY(-66.6667%)" }], { duration: light ? 90 : 160, delay: i * (light ? 12 : 28), easing: "steps(2, end)", fill: "both" });
+      });
+      const finish = () => { tag.textContent = final; tag.classList.remove("tag-scrambling"); };
+      Promise.all(animations.map(a => a.finished)).then(finish, finish);
+      return animations;
+    });
+  });
+})();
+
+/* ---------- Motion: project terminal ---------- */
+(() => {
+  const code = $(".term-code"); if (!code) return;
+  const source = $("pre", code);
+  aboutScene(code, light => {
+    // An invisible original reserves layout and supplies the complete text to assistive technology.
+    const copy = source.cloneNode(true), walker = document.createTreeWalker(copy, NodeFilter.SHOW_TEXT), nodes = [];
+    copy.className = "term-typing"; copy.setAttribute("aria-hidden", "true"); $(".cursor", copy)?.remove();
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    let index = 0;
+    const animations = nodes.flatMap(node => {
+      const fragment = document.createDocumentFragment();
+      const chunks = light ? node.textContent.match(/\S+\s*|\s+/g) || [] : [...node.textContent];
+      const result = chunks.map(text => {
+        const char = document.createElement("span"); char.textContent = text; fragment.append(char);
+        return char.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1, delay: index++ * (light ? 24 : 13), easing: "steps(1, end)", fill: "both" });
+      });
+      node.replaceWith(fragment); return result;
+    });
+    code.append(copy); code.classList.add("term-typing-active");
+    const finish = () => { copy.remove(); code.classList.remove("term-typing-active"); };
+    Promise.all(animations.map(a => a.finished)).then(finish, finish);
+    return animations;
+  });
+})();
+
+/* ---------- Motion: letter lab ---------- */
+(() => {
+  const ink = $(".letter-ink"); if (!ink) return;
+  aboutScene(ink, light => [$("path", ink).animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: light ? 450 : 1100, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" })]);
 })();
 
 /* ---------- Motion: count-ups ---------- */

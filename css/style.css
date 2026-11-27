@@ -1169,3 +1169,72 @@ html.motion-paused body[data-page="about"] .timeline::before { transform: scaleY
   .film-wash { display: none; }
   body[data-page="about"] .timeline::before { transform: none; }
 }
+
+/* ---------- Motion: project cards ---------- */
+.project-card { min-width: 0; perspective: 1000px; }
+@media (min-width: 900px) { .showcase.flip-side .project-card { order: 2; } }
+.project-card.scene-pending { opacity: 0; }
+/* Keep the transition-named image flat; its surrounding planes supply the depth. */
+.project-surface { overflow: visible; transform-style: preserve-3d; box-shadow: none; }
+.project-surface::before { content: ""; position: absolute; inset: 14px 7px -8px; border-radius: inherit; background: #0009; filter: blur(18px); transform: translate3d(var(--shadow-x, 0px), var(--shadow-y, 8px), -16px); transition: transform .4s var(--ease-out); pointer-events: none; }
+.project-depth { position: relative; overflow: hidden; border-radius: inherit; background: var(--bg-2); transform: translateZ(12px); }
+.term-tile .project-depth { background: linear-gradient(160deg, #111A38, #0B1124); }
+.project-surface img, .project-surface:hover img { display: block; transform: none; transition: none; }
+.project-surface.spot::after { transform: translateZ(20px); }
+.project-glare { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; transform: translateZ(24px); opacity: 0; transition: opacity .3s; }
+.project-glare::before { content: ""; position: absolute; inset: -50%; background: linear-gradient(120deg, transparent 35%, #f3ead61c 49%, transparent 63%); transform: translate(var(--glare-x, 0%), var(--glare-y, 0%)); transition: transform .2s ease-out; }
+.project-pointed .project-glare { opacity: 1; }
+.project-card.motion-offscreen .project-surface, .project-card.motion-offscreen .project-glare, .project-card.motion-offscreen .project-glare::before,
+html.motion-hidden .project-surface, html.motion-hidden .project-glare, html.motion-hidden .project-glare::before { transition: none; }
+@media (max-width: 599px), (pointer: coarse) {
+  .project-depth { transform: none; }
+  .project-surface .project-glare, .project-surface.spot::after { display: none; }
+}
+
+/* ---------- Motion: project tags ---------- */
+.showcase .tags li { position: relative; }
+.tag-scrambling .tag-label { opacity: 0; }
+.tag-scramble { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; white-space: pre; }
+.tag-cell { display: inline-block; width: 1ch; height: 1.5em; overflow: hidden; }
+.tag-reel { display: block; color: var(--blue); }
+.tag-reel > span { display: block; height: 1.5em; line-height: 1.5; }
+.tag-reel > span:last-child { color: var(--gold-soft); }
+
+/* ---------- Motion: project terminal ---------- */
+.term-code { position: relative; }
+.term-typing-active > pre:not(.term-typing) { opacity: 0; }
+.term-code > .term-typing { position: absolute; inset: 0; pointer-events: none; }
+.term-code .cursor { animation-play-state: paused; }
+.term-code.scene-settled:not(.motion-offscreen) .cursor { animation-play-state: running; }
+
+/* ---------- Motion: letter lab ---------- */
+.letter-lab h2 em::after { display: none; }
+.letter-ink { position: absolute; left: 0; top: 100%; width: 100%; height: .24em; overflow: visible; pointer-events: none; }
+.letter-ink path { transform-origin: left; }
+.letter-ink.scene-pending path { transform: scaleX(0); }
+.letter-art { animation: letter-drift 8s ease-in-out infinite; }
+.letter-wax-glint { opacity: 0; animation: letter-glint 11s ease-in-out infinite; }
+@keyframes letter-drift { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(.6deg); } }
+@keyframes letter-glint { 0%, 78%, 88%, 100% { opacity: 0; transform: translate(-2px, 2px); } 83% { opacity: .8; transform: translate(1px, -1px); } }
+@media (max-width: 599px), (pointer: coarse) { .letter-art, .letter-wax-glint { animation: none; } }
+
+/* ---------- Motion: project static and print ---------- */
+html.motion-paused .project-card, html.motion-paused .project-surface, html.motion-paused .project-depth,
+html.motion-paused .letter-art { opacity: 1; transform: none !important; }
+html.motion-paused .project-surface.spot::after, html.motion-paused .project-glare,
+html.motion-paused .tag-scramble, html.motion-paused .term-typing { display: none; }
+html.motion-paused .tag-label, html.motion-paused .term-code > pre { opacity: 1; }
+html.motion-paused .letter-ink path { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .project-card, .project-surface, .project-depth, .letter-art { opacity: 1; transform: none !important; }
+  .project-surface.spot::after, .project-glare, .tag-scramble, .term-typing { display: none; }
+  .tag-label, .term-code > pre { opacity: 1 !important; }
+  .letter-art, .letter-wax-glint, .term-code .cursor { animation: none !important; }
+  .letter-ink path { transform: none !important; }
+}
+@media print {
+  .project-card, .project-surface, .project-depth { opacity: 1 !important; transform: none !important; }
+  .project-surface::before, .project-surface::after, .project-glare, .tag-scramble, .term-typing { display: none !important; }
+  .tag-label, .term-code > pre { opacity: 1 !important; }
+  .letter-ink path { transform: none !important; }
+}
