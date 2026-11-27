@@ -576,3 +576,8 @@ dialog[open] { animation: pop .3s var(--ease-out); }
 @keyframes c-wave { from { transform: rotate(-165deg); } to { transform: rotate(-125deg); } }
 @keyframes c-glow { to { opacity: .6; } }
 @keyframes c-racket { 0%, 100% { transform: rotate(-20deg); } 20% { transform: rotate(-150deg); } 35% { transform: rotate(40deg); } }
+
+/* software (facing the right way): head bobs while typing, logo glows, code fills the floating editor */
+.playing .s-software .typer { animation: hb-tap .24s ease-in-out infinite alternate; }
+.s-software .logo { transform-box: fill-box; transform-origin: center; }
+.playing .s-software .logo { animation: c-glow 1.4s ease-in-out infinite alternate; }

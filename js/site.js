@@ -373,7 +373,7 @@ const CHIBI = `<svg viewBox="0 0 64 84" aria-hidden="true"><g class="bodyg">
   <ellipse cx="21" cy="32" rx="2.6" ry="1.5" fill="#EFA59A" opacity=".55"/><ellipse cx="43" cy="32" rx="2.6" ry="1.5" fill="#EFA59A" opacity=".55"/>
   <path d="M29 33q3 2.6 6 0" fill="none" stroke="#141319" stroke-width="1.5" stroke-linecap="round"/>
   <g class="p-camera"><rect x="20" y="19" width="24" height="15" rx="3" fill="#1C1D26"/><rect x="23" y="16" width="7" height="4" rx="1" fill="#1C1D26"/><circle cx="32" cy="26.5" r="5" fill="#3A4466" stroke="#E8B651" stroke-width="1.4"/><path class="flash" d="M40 10l2-5 2 5 5 2-5 2-2 5-2-5-5-2z" fill="#fff"/></g>
-  <g class="p-laptop"><path d="M14 66h36l4 5H10z" fill="#9AA3BF"/><rect class="scr" x="17" y="50" width="30" height="16" rx="2" fill="#1B2340" stroke="#6FA8FF" stroke-width="1.2"/></g>
+  <g class="p-laptop"><rect x="14" y="49" width="36" height="20" rx="2.5" fill="#2A3354" stroke="#3A4466" stroke-width="1"/><circle class="scr" cx="32" cy="59" r="2.6" fill="#E8B651"/><path d="M11 68h42l3 5H8z" fill="#9AA3BF"/></g>
 </g></svg>`;
 const chibi = document.createElement("button");
 chibi.className = "chibi"; chibi.type = "button"; chibi.innerHTML = CHIBI; chibi.setAttribute("aria-label", "Mini Thong: get a hint for this room");
