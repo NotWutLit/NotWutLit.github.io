@@ -27,7 +27,8 @@
 }
 
 * { box-sizing: border-box; }
-html { scrollbar-color: #2A3354 var(--bg); scroll-padding-top: 90px; }
+html { scrollbar-color: #2A3354 var(--bg); scroll-padding-top: 90px; background-color: #0A0F1E; }
+body { background-color: #0A0F1E; } /* plain colour under the gradients, for tools that cannot read layered backgrounds */
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 
 body {
@@ -443,7 +444,7 @@ dialog[open] { animation: pop .3s var(--ease-out); }
 
 /* ---------- Print: light, no effects ---------- */
 @media print {
-  :root { --text: #111; --muted: #444; --gold: #6B5420; --gold-soft: #6B5420; }
+  .resume-item .meta, .timeline time, .tags li { color: #333 !important; } /* print: element colours, not token overrides */
   body { background: #fff; color: #111; font-size: 12pt; }
   body::before, body::after, header, footer, .chibi, .bubble, .progress, .key, .toast, .actions .btn, .tools { display: none !important; }
   h1, h2, h3, strong, .resume-item h3 { color: #111; }
