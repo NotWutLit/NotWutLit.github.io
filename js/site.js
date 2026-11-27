@@ -204,6 +204,12 @@ function collect(id, el) {
   else toast(`Key found! ${found.size} of 5. ${5 - found.size} more hidden around the site.`);
 }
 
+function resetKeys() {
+  found = new Set(); store.set("tt-keys", []);
+  toast("Keys reset. All 5 are hidden again.");
+  setTimeout(() => location.reload(), 900); // reload so this page's key goes back in its hiding spot
+}
+
 // page-specific reveal triggers
 const keyFor = id => $(`.key[data-key="${id}"]`);
 $(".flip")?.addEventListener("flipped", () => keyFor("about")?.removeAttribute("hidden"));
@@ -224,10 +230,15 @@ const rooms = makeDialog("rooms", "", "Escape room progress");
 function openRooms() {
   rooms.innerHTML = `<h2>Escape the portfolio</h2><p class="hint">Each page is a room with one hidden key. Find all five to open the vault.</p>
     <ol>${ROOMS.map(r => `<li class="${found.has(r.id) ? "on" : ""}"><a href="${r.url}">${r.name}</a><span class="state">${found.has(r.id) ? "key found" : "locked"}</span></li>`).join("")}</ol>
-    <div class="actions">${found.size === 5 ? `<button class="btn" data-act="vault">Open the vault</button>` : `<button class="btn ghost" data-act="hint">Hint for this room</button>`}<button class="btn ghost" data-act="close">Close</button></div><p class="hint" data-hint></p>`;
+    <div class="actions">${found.size === 5 ? `<button class="btn" data-act="vault">Open the vault</button>` : `<button class="btn ghost" data-act="hint">Hint for this room</button>`}<button class="btn ghost" data-act="close">Close</button>${found.size ? `<button class="btn ghost" data-act="reset">Reset keys</button>` : ""}</div><p class="hint" data-hint></p>`;
   rooms.querySelector("[data-act=close]").onclick = () => rooms.close();
   rooms.querySelector("[data-act=hint]")?.addEventListener("click", () => { rooms.querySelector("[data-hint]").textContent = hintText(); });
   rooms.querySelector("[data-act=vault]")?.addEventListener("click", () => { rooms.close(); openVault(); });
+  const rb = rooms.querySelector("[data-act=reset]");
+  rb?.addEventListener("click", () => {
+    if (rb.dataset.sure) { rooms.close(); resetKeys(); return; }
+    rb.dataset.sure = "1"; rb.textContent = "Sure? Click again to reset"; // two clicks, so nobody loses progress by accident
+  });
   rooms.showModal();
 }
 ring.addEventListener("click", openRooms);
@@ -268,7 +279,7 @@ const term = makeDialog("terminal", `<div class="term-bar"><i></i><i></i><i></i>
 const tout = $(".term-out", term), tin = $("#term-input", term);
 const print = (html, cls = "") => { const d = document.createElement("div"); if (cls) d.className = cls; d.innerHTML = html; tout.append(d); tout.scrollTop = tout.scrollHeight; };
 const CMDS = {
-  help: () => print(`commands: <span class="p">whoami</span>, <span class="p">about</span>, <span class="p">projects</span>, <span class="p">skills</span>, <span class="p">contact</span>, <span class="p">ls</span>, <span class="p">cat about.txt</span>, <span class="p">keys</span>, <span class="p">unlock</span>, <span class="p">open &lt;page&gt;</span>, <span class="p">clear</span>, <span class="p">exit</span>`),
+  help: () => print(`commands: <span class="p">whoami</span>, <span class="p">about</span>, <span class="p">projects</span>, <span class="p">skills</span>, <span class="p">contact</span>, <span class="p">ls</span>, <span class="p">cat about.txt</span>, <span class="p">keys</span>, <span class="p">unlock</span>, <span class="p">reset</span>, <span class="p">open &lt;page&gt;</span>, <span class="p">clear</span>, <span class="p">exit</span>`),
   whoami: () => print("Thong Thai. CS student at the University of Georgia, from Đà Nẵng, Vietnam. I build apps for the people around me."),
   about: () => print("Grew up in a three-generation home in Đà Nẵng. My grandmother wanted peace in the family; my father wanted to watch his children grow up. I build so I can be there for others."),
   projects: () => print(`golden-peace   wellness app for older adults in Vietnam (React Native, Expo, Supabase)\nremember-me    diary app for people living with Alzheimer’s (Flutter, Firebase)\n<span class="dim">try: open golden-peace</span>`),
@@ -282,6 +293,7 @@ const CMDS = {
     ? print(`ACCESS GRANTED\n\nYou found all five keys. Thank you for exploring.\nThe real secret: this whole site is built by hand, and I would love to build something with you.\nSay hi: <a href="mailto:${EMAIL}">${EMAIL}</a>`, "ok")
     : print(`ACCESS DENIED: ${found.size}/5 keys. Type <span class="p">keys</span> to see which rooms are left.`, "dim"),
   "sudo hire thong": () => print(`[sudo] password for recruiter: ********\nPermission granted. Opening email...`, "ok") || setTimeout(() => location.href = `mailto:${EMAIL}`, 900),
+  reset: () => { if (!found.size) return print("No keys to reset yet.", "dim"); print("Resetting keys...", "dim"); setTimeout(() => { term.close(); resetKeys(); }, 500); },
   clear: () => { tout.innerHTML = ""; },
   exit: () => term.close(),
 };
