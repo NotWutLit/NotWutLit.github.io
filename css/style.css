@@ -633,3 +633,5 @@ section::after { content: ""; display: table; clear: both; }
 
 /* About: wide photo under Now at UGA */
 .wide-photo { --r: -1.5deg; margin: 2rem auto 0; max-width: 560px; }
+/* second photo in the About row: tilts the other way, sits a little lower */
+.photo-row .flip:nth-child(2) { --r: 2deg; margin-top: 1.5rem; }
